@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>STUDIO ANA PAULA BATISTA | Beleza & Spa em Campo Grande, MS</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Montserrat:wght@300;400;500&display=swap" rel="stylesheet">
+    
+    <!-- Feather Icons -->
+    <script src="https://unpkg.com/feather-icons"></script>
+
+    <style>
+        /* Estilos personalizados inspirados na imagem de referência */
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: #F4F1ED; /* Um bege muito claro e sofisticado */
+            color: #595441; /* Um cinza-oliva escuro para o texto */
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        .font-serif {
+            font-family: 'Cormorant Garamond', serif;
+        }
+        /* Efeito de fade-in suave para elementos ao rolar a página */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .fade-in-on-scroll {
+            opacity: 0;
+            animation: fadeIn 0.8s ease-out forwards;
+            animation-play-state: paused;
+        }
+        /* Delays para animação escalonada */
+        .delay-1 { animation-delay: 0.2s; }
+        .delay-2 { animation-delay: 0.4s; }
+        .delay-3 { animation-delay: 0.6s; }
+        .delay-4 { animation-delay: 0.8s; }
+        .delay-5 { animation-delay: 1s; }
+
+        /* Estilos para o vídeo de fundo */
+        #hero-video-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: 0; 
+        }
+        #hero-video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* Estilos para o carrossel de vídeos */
+        .video-carousel-container {
+            overflow: hidden;
+            position: relative;
+            width: 100%;
+            padding: 2rem 0;
+        }
+        .video-carousel-track {
+            display: flex;
+            width: calc(320px * 12); /* Largura do item * (6 vídeos originais + 6 clones) */
+            animation: scroll 40s linear infinite;
+        }
+        .video-carousel-item {
+            width: 300px;
+            height: 533px; /* Proporção 9:16 */
+            flex-shrink: 0;
+            margin: 0 10px;
+            border-radius: 1rem;
+            overflow: hidden;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        @keyframes scroll {
+            from { transform: translateX(0); }
+            to { transform: translateX(calc(-320px * 6)); } /* Metade da largura total (item + margem) */
+        }
+        .video-carousel-container:hover .video-carousel-track {
+            animation-play-state: paused;
+        }
+        
+        /* Estilo para o mapa do Google, para um visual mais limpo */
+        .map-iframe {
+            filter: grayscale(100%) contrast(1.2) opacity(0.8);
+            transition: filter 0.3s ease;
+        }
+        .map-iframe:hover {
+            filter: grayscale(0%) contrast(1) opacity(1);
+        }
+
+        /* Estilos para o carrossel de depoimentos */
+        .testimonial-carousel-track {
+            display: flex;
+            width: calc(384px * 12); /* Largura do item (md:w-96) * (6 depoimentos originais + 6 clones) */
+            animation: scroll-testimonials 50s linear infinite;
+        }
+        .testimonial-carousel-item {
+            width: 384px; /* md:w-96 */
+            flex-shrink: 0;
+            padding: 0 1rem; /* gap-8 */
+        }
+        @keyframes scroll-testimonials {
+            from { transform: translateX(0); }
+            to { transform: translateX(calc(-384px * 6)); }
+        }
+        .testimonial-carousel-container:hover .testimonial-carousel-track {
+            animation-play-state: paused;
+        }
+        
+        /* Estilo para texto vazado (knockout) */
+        .text-outline {
+            color: transparent;
+            -webkit-text-stroke: 1px white;
+            text-stroke: 1px white;
+            text-shadow: 1px 1px 6px rgba(0,0,0,0.6);
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <!-- Header Section -->
+    <header class="bg-white/70 backdrop-blur-lg sticky top-0 z-50 shadow-sm">
+        <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="#inicio" class="text-center leading-none">
+                <span class="text-xs font-light tracking-[0.2em] text-gray-600">STUDIO</span>
+                <span class="block text-lg font-serif font-semibold text-gray-800 tracking-wider -mt-1">ANA PAULA BATISTA</span>
+            </a>
+            <nav class="hidden md:flex items-center space-x-8 text-sm tracking-wider">
+                <a href="#inicio" class="text-gray-600 hover:text-gray-900 transition-colors">INÍCIO</a>
+                <a href="#sobre" class="text-gray-600 hover:text-gray-900 transition-colors">SOBRE</a>
+                <a href="#servicos" class="text-gray-600 hover:text-gray-900 transition-colors">SERVIÇOS</a>
+                <a href="#loja" class="text-gray-600 hover:text-gray-900 transition-colors">LOJA</a>
+                <a href="#artistas" class="text-gray-600 hover:text-gray-900 transition-colors">ARTISTAS</a>
+                <a href="#inspiracoes" class="text-gray-600 hover:text-gray-900 transition-colors">INSPIRAÇÕES</a>
+                <a href="#depoimentos" class="text-gray-600 hover:text-gray-900 transition-colors">DEPOIMENTOS</a>
+                <a href="#momentos" class="text-gray-600 hover:text-gray-900 transition-colors">MOMENTOS</a>
+                <a href="#contato" class="text-gray-600 hover:text-gray-900 transition-colors">CONTATO</a>
+            </nav>
+            <button id="mobile-menu-button" class="md:hidden">
+                <i data-feather="menu" class="text-gray-800"></i>
+            </button>
+        </div>
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="hidden md:hidden px-6 pb-4 flex flex-col space-y-4 text-center">
+            <a href="#inicio" class="text-gray-600 hover:text-gray-900 py-2 transition-colors">INÍCIO</a>
+            <a href="#sobre" class="text-gray-600 hover:text-gray-900 py-2 transition-colors">SOBRE</a>
+            <a href="#servicos" class="text-gray-600 hover:text-gray-900 py-2 transition-colors">SERVIÇOS</a>
+            <a href="#loja" class="text-gray-600 hover:text-gray-900 py-2 transition-colors">LOJA</a>
+            <a href="#artistas" class="text-gray-600 hover:text-gray-900 py-2 transition-colors">ARTISTAS</a>
+            <a href="#inspiracoes" class="text-gray-600 hover:text-gray-900 py-2 transition-colors">INSPIRAÇÕES</a>
+            <a href="#depoimentos" class="text-gray-600 hover:text-gray-900 py-2 transition-colors">DEPOIMENTOS</a>
+            <a href="#momentos" class="text-gray-600 hover:text-gray-900 py-2 transition-colors">MOMENTOS</a>
+            <a href="#contato" class="text-gray-600 hover:text-gray-900 py-2 transition-colors">CONTATO</a>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main>
+        <!-- Hero Section -->
+        <section id="inicio" class="relative w-full h-screen flex items-center justify-center">
+            <div id="hero-video-container">
+                <video autoplay loop muted playsinline id="hero-video">
+                    <source src="https://firebasestorage.googleapis.com/v0/b/platamais.firebasestorage.app/o/projeto%20vm%2FCopy%20of%20P%20(1).mp4?alt=media&token=82f97b6a-c208-4def-b92f-e74adb992096" type="video/mp4">
+                    O seu navegador não suporta o elemento de vídeo.
+                </video>
+            </div>
+        </section>
+
+        <!-- About Section -->
+        <section id="sobre" class="py-20 md:py-32">
+            <div class="container mx-auto px-6 text-center">
+                <h2 class="text-lg md:text-xl tracking-[0.3em] font-light text-gray-600">STUDIO</h2>
+                <h1 class="text-5xl md:text-7xl font-serif font-semibold mt-2 text-gray-800">ANA PAULA BATISTA</h1>
+            </div>
+        </section>
+
+        <!-- Full-width Image Banner -->
+        <section class="h-[60vh] bg-cover bg-center bg-fixed flex items-center justify-center text-white" style="background-image: url('https://firebasestorage.googleapis.com/v0/b/platamais.firebasestorage.app/o/projeto%20vm%2F357576012_18370232662011495_6867085430422208779_n..jpg?alt=media&token=e90b1893-961d-4ba4-b27c-84266b03d586');">
+            <div class="text-center fade-in-on-scroll">
+                <p class="max-w-3xl mx-auto text-lg md:text-xl text-white leading-relaxed">
+                    A beleza está na alma, nos sonhos e no coração. Nós chegamos para ir além do serviço, nosso propósito está no sentir. Somos o <strong>STUDIO ANA PAULA BATISTA</strong>, um refúgio de beleza e bem-estar em Campo Grande - Mato Grosso do Sul!
+                </p>
+            </div>
+        </section>
+
+        <!-- Serviços Section -->
+        <section id="servicos" class="py-20 md:py-32 bg-white">
+            <div class="container mx-auto px-6">
+                <h2 class="text-4xl md:text-5xl font-serif text-center mb-16 fade-in-on-scroll">Nossos Serviços</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+                    <div class="fade-in-on-scroll delay-1">
+                        <img src="https://images.pexels.com/photos/3993449/pexels-photo-3993449.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2" alt="Mulher recebendo tratamento capilar" class="rounded-lg shadow-lg object-cover w-full h-full" onerror="this.onerror=null;this.src='https://placehold.co/600x800/EAE8E4/3D3D3D?text=Serviços';">
+                    </div>
+                    <div class="fade-in-on-scroll delay-2">
+                        <p class="text-lg text-gray-600 mb-8">Cada serviço é uma experiência, realizada com técnicas de ponta e produtos da mais alta qualidade para realçar sua beleza natural.</p>
+                        <ul class="space-y-4 text-lg">
+                            <li class="border-b border-gray-200 pb-3 font-semibold text-gray-800">Mega Hair</li>
+                            <li class="border-b border-gray-200 pb-3">Coloração e Mechas</li>
+                            <li class="border-b border-gray-200 pb-3">Tratamentos Capilares</li>
+                            <li class="border-b border-gray-200 pb-3">Manicure & Pedicure</li>
+                            <li class="border-b border-gray-200 pb-3">Design de Sobrancelhas</li>
+                            <li class="pb-3">Maquiagem Profissional</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Loja Section -->
+        <section id="loja" class="py-20 md:py-32">
+            <div class="container mx-auto px-6 text-center">
+                <h2 class="text-4xl md:text-5xl font-serif mb-4 fade-in-on-scroll">Nossa Loja</h2>
+                <p class="text-lg text-gray-600 mb-12 fade-in-on-scroll delay-1">Produtos selecionados para seu cuidado em casa.</p>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <!-- Product 1 -->
+                    <div class="text-left fade-in-on-scroll delay-2">
+                        <div class="bg-white rounded-lg shadow-lg overflow-hidden mb-4">
+                            <img src="https://images.pexels.com/photos/1926620/pexels-photo-1926620.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2" alt="Extensões de cabelo premium" class="w-full h-64 object-cover" onerror="this.onerror=null;this.src='https://placehold.co/600x600/EAE8E4/595441?text=Imagem+Indisponível';">
+                        </div>
+                        <h3 class="font-serif text-xl">Linha de Extensão Premium</h3>
+                        <p class="text-gray-800 font-semibold">R$ 1.200,00</p>
+                    </div>
+                    <!-- Product 2 -->
+                    <div class="text-left fade-in-on-scroll delay-3">
+                        <div class="bg-white rounded-lg shadow-lg overflow-hidden mb-4">
+                            <img src="https://images.pexels.com/photos/2529158/pexels-photo-2529158.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2" alt="Sérum Reparador de Pontas" class="w-full h-64 object-cover" onerror="this.onerror=null;this.src='https://placehold.co/600x600/D6D2CC/595441?text=Imagem+Indisponível';">
+                        </div>
+                        <h3 class="font-serif text-xl">Sérum Reparador</h3>
+                        <p class="text-gray-800 font-semibold">R$ 150,00</p>
+                    </div>
+                    <!-- Product 3 -->
+                    <div class="text-left fade-in-on-scroll delay-4">
+                        <div class="bg-white rounded-lg shadow-lg overflow-hidden mb-4">
+                            <img src="https://images.pexels.com/photos/2529146/jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2" alt="Máscara de Hidratação Profunda" class="w-full h-64 object-cover" onerror="this.onerror=null;this.src='https://placehold.co/600x600/CCC5BB/595441?text=Imagem+Indisponível';">
+                        </div>
+                        <h3 class="font-serif text-xl">Máscara Hidratante</h3>
+                        <p class="text-gray-800 font-semibold">R$ 180,00</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Artistas Section -->
+        <section id="artistas" class="py-20 md:py-32 bg-white">
+            <div class="container mx-auto px-6 text-center">
+                <h2 class="text-4xl md:text-5xl font-serif mb-12 fade-in-on-scroll">Nosso Time de Artistas</h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12">
+                    <!-- Artista 1 -->
+                    <div class="fade-in-on-scroll delay-1">
+                        <img src="https://images.pexels.com/photos/3764014/pexels-photo-3764014.jpeg?auto=compress&cs=tinysrgb&w=800" alt="Foto do Artista 1" class="w-full h-auto object-cover rounded-lg shadow-lg mb-4" onerror="this.onerror=null;this.src='https://placehold.co/400x500/EAE8E4/3D3D3D?text=Imagem+Indisponível';">
+                        <h3 class="text-xl font-serif">Ana Paula Batista</h3>
+                        <p class="text-gray-600">Fundadora & Especialista em Mega Hair</p>
+                    </div>
+                    <!-- Artista 2 -->
+                    <div class="fade-in-on-scroll delay-2">
+                        <img src="https://images.pexels.com/photos/3764011/pexels-photo-3764011.jpeg?auto=compress&cs=tinysrgb&w=800" alt="Foto do Artista 2" class="w-full h-auto object-cover rounded-lg shadow-lg mb-4" onerror="this.onerror=null;this.src='https://placehold.co/400x500/EAE8E4/3D3D3D?text=Imagem+Indisponível';">
+                        <h3 class="font-serif text-xl">Juliana Silva</h3>
+                        <p class="text-gray-600">Especialista em Coloração</p>
+                    </div>
+                    <!-- Artista 3 -->
+                    <div class="fade-in-on-scroll delay-3">
+                        <img src="https://images.pexels.com/photos/3738347/pexels-photo-3738347.jpeg?auto=compress&cs=tinysrgb&w=800" alt="Foto do Artista 3" class="w-full h-auto object-cover rounded-lg shadow-lg mb-4" onerror="this.onerror=null;this.src='https://placehold.co/400x500/EAE8E4/3D3D3D?text=Imagem+Indisponível';">
+                        <h3 class="font-serif text-xl">Carla Souza</h3>
+                        <p class="text-gray-600">Terapeuta Capilar</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Inspirações Section -->
+        <section id="inspiracoes" class="py-20 md:py-32">
+            <div class="container mx-auto px-6">
+                <h2 class="text-4xl md:text-5xl font-serif text-center mb-16 fade-in-on-scroll">Inspirações</h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8 items-center">
+                    <div class="space-y-8">
+                        <div class="rounded-lg overflow-hidden shadow-lg fade-in-on-scroll delay-1"><img src="http://googleusercontent.com/file_content/12" alt="Mulher no salão de beleza" class="w-full h-full object-cover" onerror="this.onerror=null;this.src='https://placehold.co/600x400/EAE8E4/3D3D3D?text=Imagem+Indisponível';"></div>
+                        <div class="rounded-lg overflow-hidden shadow-lg fade-in-on-scroll delay-2"><img src="http://googleusercontent.com/file_content/13" alt="Close-up de penteado" class="w-full h-full object-cover" onerror="this.onerror=null;this.src='https://placehold.co/600x400/D6D2CC/3D3D3D?text=Imagem+Indisponível';"></div>
+                    </div>
+                    <div class="rounded-lg overflow-hidden shadow-lg fade-in-on-scroll delay-3">
+                        <img src="http://googleusercontent.com/file_content/10" alt="Ajustando o véu de uma noiva" class="w-full h-full object-cover" onerror="this.onerror=null;this.src='https://placehold.co/600x800/CCC5BB/3D3D3D?text=Imagem+Indisponível';">
+                    </div>
+                    <div class="space-y-8">
+                        <div class="rounded-lg overflow-hidden shadow-lg fade-in-on-scroll delay-4"><img src="http://googleusercontent.com/file_content/9" alt="Fazendo um penteado com trança" class="w-full h-full object-cover" onerror="this.onerror=null;this.src='https://placehold.co/600x400/EAE8E4/3D3D3D?text=Imagem+Indisponível';"></div>
+                        <div class="rounded-lg overflow-hidden shadow-lg fade-in-on-scroll delay-5"><img src="http://googleusercontent.com/file_content/15" alt="Cabelo loiro com ondas" class="w-full h-full object-cover" onerror="this.onerror=null;this.src='https://placehold.co/600x400/D6D2CC/3D3D3D?text=Imagem+Indisponível';"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Depoimentos Section -->
+        <section id="depoimentos" class="py-20 md:py-32 bg-white overflow-hidden">
+            <div class="container mx-auto px-6 text-center">
+                <h2 class="text-4xl md:text-5xl font-serif mb-16 fade-in-on-scroll">O Que Nossas Clientes Dizem</h2>
+                <div class="relative w-full overflow-hidden testimonial-carousel-container">
+                    <div class="testimonial-carousel-track">
+                        <!-- Depoimentos Originais -->
+                        <div class="testimonial-carousel-item">
+                            <div class="bg-[#F4F1ED] p-8 rounded-lg shadow-sm h-full flex flex-col justify-center">
+                                <p class="text-lg italic mb-6">"O melhor mega hair que já fiz! A Ana é uma artista e a equipe é maravilhosa. Me senti em casa."</p>
+                                <p class="font-semibold">- Mariana F.</p>
+                            </div>
+                        </div>
+                        <div class="testimonial-carousel-item">
+                            <div class="bg-[#F4F1ED] p-8 rounded-lg shadow-sm h-full flex flex-col justify-center">
+                                <p class="text-lg italic mb-6">"Atendimento impecável e profissionais de altíssimo nível. A cor do meu cabelo ficou exatamente como eu sonhava."</p>
+                                <p class="font-semibold">- Gabriela P.</p>
+                            </div>
+                        </div>
+                        <div class="testimonial-carousel-item">
+                            <div class="bg-[#F4F1ED] p-8 rounded-lg shadow-sm h-full flex flex-col justify-center">
+                                <p class="text-lg italic mb-6">"Um verdadeiro spa de beleza. Saí de lá renovada e me sentindo linda. Recomendo de olhos fechados!"</p>
+                                <p class="font-semibold">- Fernanda L.</p>
+                            </div>
+                        </div>
+                        <div class="testimonial-carousel-item">
+                            <div class="bg-[#F4F1ED] p-8 rounded-lg shadow-sm h-full flex flex-col justify-center">
+                                <p class="text-lg italic mb-6">"Profissionalismo e carinho em cada detalhe. O tratamento capilar salvou meu cabelo. Gratidão!"</p>
+                                <p class="font-semibold">- Beatriz C.</p>
+                            </div>
+                        </div>
+                        <div class="testimonial-carousel-item">
+                            <div class="bg-[#F4F1ED] p-8 rounded-lg shadow-sm h-full flex flex-col justify-center">
+                                <p class="text-lg italic mb-6">"Finalmente encontrei um lugar que entende o meu cabelo. O resultado ficou incrível, super natural."</p>
+                                <p class="font-semibold">- Renata S.</p>
+                            </div>
+                        </div>
+                        <div class="testimonial-carousel-item">
+                            <div class="bg-[#F4F1ED] p-8 rounded-lg shadow-sm h-full flex flex-col justify-center">
+                                <p class="text-lg italic mb-6">"O ambiente é lindo e aconchegante. As meninas são super atenciosas. Virou meu lugar preferido!"</p>
+                                <p class="font-semibold">- Laura M.</p>
+                            </div>
+                        </div>
+                        <!-- Depoimentos Clonados para o loop -->
+                        <div class="testimonial-carousel-item">
+                            <div class="bg-[#F4F1ED] p-8 rounded-lg shadow-sm h-full flex flex-col justify-center">
+                                <p class="text-lg italic mb-6">"O melhor mega hair que já fiz! A Ana é uma artista e a equipe é maravilhosa. Me senti em casa."</p>
+                                <p class="font-semibold">- Mariana F.</p>
+                            </div>
+                        </div>
+                        <div class="testimonial-carousel-item">
+                            <div class="bg-[#F4F1ED] p-8 rounded-lg shadow-sm h-full flex flex-col justify-center">
+                                <p class="text-lg italic mb-6">"Atendimento impecável e profissionais de altíssimo nível. A cor do meu cabelo ficou exatamente como eu sonhava."</p>
+                                <p class="font-semibold">- Gabriela P.</p>
+                            </div>
+                        </div>
+                        <div class="testimonial-carousel-item">
+                            <div class="bg-[#F4F1ED] p-8 rounded-lg shadow-sm h-full flex flex-col justify-center">
+                                <p class="text-lg italic mb-6">"Um verdadeiro spa de beleza. Saí de lá renovada e me sentindo linda. Recomendo de olhos fechados!"</p>
+                                <p class="font-semibold">- Fernanda L.</p>
+                            </div>
+                        </div>
+                        <div class="testimonial-carousel-item">
+                            <div class="bg-[#F4F1ED] p-8 rounded-lg shadow-sm h-full flex flex-col justify-center">
+                                <p class="text-lg italic mb-6">"Profissionalismo e carinho em cada detalhe. O tratamento capilar salvou meu cabelo. Gratidão!"</p>
+                                <p class="font-semibold">- Beatriz C.</p>
+                            </div>
+                        </div>
+                        <div class="testimonial-carousel-item">
+                            <div class="bg-[#F4F1ED] p-8 rounded-lg shadow-sm h-full flex flex-col justify-center">
+                                <p class="text-lg italic mb-6">"Finalmente encontrei um lugar que entende o meu cabelo. O resultado ficou incrível, super natural."</p>
+                                <p class="font-semibold">- Renata S.</p>
+                            </div>
+                        </div>
+                        <div class="testimonial-carousel-item">
+                            <div class="bg-[#F4F1ED] p-8 rounded-lg shadow-sm h-full flex flex-col justify-center">
+                                <p class="text-lg italic mb-6">"O ambiente é lindo e aconchegante. As meninas são super atenciosas. Virou meu lugar preferido!"</p>
+                                <p class="font-semibold">- Laura M.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Momentos (Reels) Section -->
+        <section id="momentos" class="py-20 md:py-32">
+            <div class="container mx-auto px-6 text-center">
+                <h2 class="text-4xl md:text-5xl font-serif mb-16 fade-in-on-scroll">Momentos no Studio</h2>
+                <div class="relative w-full overflow-hidden video-carousel-container">
+                    <div class="video-carousel-track">
+                        <!-- 6 vídeos originais -->
+                        <div class="video-carousel-item"><video class="w-full h-full object-cover" src="AQPO_kBn29FKr0roCY2eSjSG1ksfE9ISOXoXUyUpYD9RI4YHftX9_lwHTRDo4FMBAXYGhXK0xrP7oGVTH5MGe2Ekt79GvKbM.mp4" autoplay loop muted playsinline></video></div>
+                        <div class="video-carousel-item"><video class="w-full h-full object-cover" src="https://firebasestorage.googleapis.com/v0/b/platamais.firebasestorage.app/o/projeto%20vm%2FAQPziPSX8J10MEUUWa0G7jgaoukfjd7vN3SXdpOhbnF7zpQTJ9U0D_Od0GAhY_qh6LL08ACIGV4vm2cuGcZ3cZxcan9av5Vt.mp4?alt=media&token=3659d741-bd3e-408f-b289-353696a6cd6b" autoplay loop muted playsinline></video></div>
+                        <div class="video-carousel-item"><video class="w-full h-full object-cover" src="https://firebasestorage.googleapis.com/v0/b/platamais.firebasestorage.app/o/projeto%20vm%2FAQPvHzJEawE9F2ynODsYyGYLdV4b6Vu27IelcdETeOdOi1LVKlIBU5JJ5SdVGQOsC2pfRjx0F2P85n0qvwdsyQBPocRMyGZ4.mp4?alt=media&token=02862813-5ab7-45f8-8aab-d1974ea10d0e" autoplay loop muted playsinline></video></div>
+                        <div class="video-carousel-item"><video class="w-full h-full object-cover" src="https://firebasestorage.googleapis.com/v0/b/platamais.firebasestorage.app/o/projeto%20vm%2FAQOCP2ZQLqFg_xTVT0h8Rrdbq2XoFsfTu8_7emXV1NtNTbYfgxQE6bCFyOoh5G0-3zvWK6tL-D7QTtzO8qFUJ5nXfvtMXvaZ.mp4?alt=media&token=a6173373-4d5a-4ca5-97d2-d791cdd8c9c3" autoplay loop muted playsinline></video></div>
+                        <div class="video-carousel-item"><video class="w-full h-full object-cover" src="https://videos.pexels.com/video-files/7578278/7578278-sd_540_960_25fps.mp4" autoplay loop muted playsinline></video></div>
+                        <div class="video-carousel-item"><video class="w-full h-full object-cover" src="https://videos.pexels.com/video-files/4992471/4992471-sd_540_960_30fps.mp4" autoplay loop muted playsinline></video></div>
+                        <!-- 6 vídeos clonados para o loop infinito -->
+                        <div class="video-carousel-item"><video class="w-full h-full object-cover" src="AQPO_kBn29FKr0roCY2eSjSG1ksfE9ISOXoXUyUpYD9RI4YHftX9_lwHTRDo4FMBAXYGhXK0xrP7oGVTH5MGe2Ekt79GvKbM.mp4" autoplay loop muted playsinline></video></div>
+                        <div class="video-carousel-item"><video class="w-full h-full object-cover" src="https://firebasestorage.googleapis.com/v0/b/platamais.firebasestorage.app/o/projeto%20vm%2FAQPziPSX8J10MEUUWa0G7jgaoukfjd7vN3SXdpOhbnF7zpQTJ9U0D_Od0GAhY_qh6LL08ACIGV4vm2cuGcZ3cZxcan9av5Vt.mp4?alt=media&token=3659d741-bd3e-408f-b289-353696a6cd6b" autoplay loop muted playsinline></video></div>
+                        <div class="video-carousel-item"><video class="w-full h-full object-cover" src="https://firebasestorage.googleapis.com/v0/b/platamais.firebasestorage.app/o/projeto%20vm%2FAQPvHzJEawE9F2ynODsYyGYLdV4b6Vu27IelcdETeOdOi1LVKlIBU5JJ5SdVGQOsC2pfRjx0F2P85n0qvwdsyQBPocRMyGZ4.mp4?alt=media&token=02862813-5ab7-45f8-8aab-d1974ea10d0e" autoplay loop muted playsinline></video></div>
+                        <div class="video-carousel-item"><video class="w-full h-full object-cover" src="https://firebasestorage.googleapis.com/v0/b/platamais.firebasestorage.app/o/projeto%20vm%2FAQOCP2ZQLqFg_xTVT0h8Rrdbq2XoFsfTu8_7emXV1NtNTbYfgxQE6bCFyOoh5G0-3zvWK6tL-D7QTtzO8qFUJ5nXfvtMXvaZ.mp4?alt=media&token=a6173373-4d5a-4ca5-97d2-d791cdd8c9c3" autoplay loop muted playsinline></video></div>
+                        <div class="video-carousel-item"><video class="w-full h-full object-cover" src="https://videos.pexels.com/video-files/7578278/7578278-sd_540_960_25fps.mp4" autoplay loop muted playsinline></video></div>
+                        <div class="video-carousel-item"><video class="w-full h-full object-cover" src="https://videos.pexels.com/video-files/4992471/4992471-sd_540_960_30fps.mp4" autoplay loop muted playsinline></video></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Full-width Image Banner 2 -->
+        <section class="relative h-[50vh] bg-cover bg-center flex items-center justify-center" style="background-image: url('https://images.pexels.com/photos/3065209/pexels-photo-3065209.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2');">
+            <div class="absolute inset-0 bg-black/30"></div> <!-- Overlay -->
+            <div class="relative text-center fade-in-on-scroll">
+                <h2 class="text-4xl md:text-5xl font-serif font-semibold text-white" style="text-shadow: 1px 1px 3px rgba(0,0,0,0.5);">A beleza está nos olhos de quem a vê</h2>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer Section -->
+    <footer id="contato" class="bg-[#EAE8E4] text-gray-700 py-20">
+        <div class="container mx-auto px-6 text-center">
+            <h3 class="text-2xl md:text-3xl font-serif mb-8 fade-in-on-scroll">ENTRE EM CONTATO</h3>
+            <div class="max-w-2xl mx-auto space-y-4 fade-in-on-scroll delay-1">
+                <p>Rua Amazonas, 623<br>Monte Castelo, Campo Grande - MS</p>
+                <p><a href="tel:67991608412" class="hover:text-gray-900 transition-colors">67 99160 8412</a></p>
+                <div class="flex justify-center space-x-6 pt-4">
+                    <a href="https://www.instagram.com/anapaulabatista.oficial?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==" target="_blank" rel="noopener noreferrer" class="hover:text-gray-900 transition-colors" aria-label="Instagram">
+                        <i data-feather="instagram"></i>
+                    </a>
+                    <a href="http://wa.me/5567991608412" target="_blank" rel="noopener noreferrer" class="hover:text-gray-900 transition-colors" aria-label="Whatsapp">
+                        <i data-feather="message-circle"></i>
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Mapa do Google -->
+            <div class="mt-12 fade-in-on-scroll delay-2">
+                <div class="w-full max-w-2xl mx-auto h-64 rounded-lg overflow-hidden shadow-lg">
+                    <iframe 
+                        class="w-full h-full border-0 map-iframe"
+                        loading="lazy" 
+                        allowfullscreen 
+                        referrerpolicy="no-referrer-when-downgrade" 
+                        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3738.161040419354!2d-54.61904568507677!3d-20.45802298630983!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x9486e8a4a2a1122b%3A0x8a5a5a5a5a5a5a5a!2sR.%20Amazonas%2C%20623%20-%20Monte%20Castelo%2C%20Campo%20Grande%20-%20MS%2C%2079010-060%2C%20Brasil!5e0!3m2!1spt-BR!2sbr!4v1691345890123!5m2!1spt-BR!2sbr">
+                    </iframe>
+                </div>
+            </div>
+
+            <div class="mt-16 pt-8 border-t border-gray-300 text-gray-500 text-sm fade-in-on-scroll delay-2">
+                <p>&copy; 2025 por STUDIO ANA PAULA BATISTA. Criado por <a href="#" class="underline hover:text-gray-800">Conecta Web Digital</a>.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Floating WhatsApp Button -->
+    <a href="http://wa.me/5567991608412" target="_blank" rel="noopener noreferrer" class="fixed bottom-6 right-6 bg-green-500 text-white p-4 rounded-full shadow-lg hover:bg-green-600 transition-colors z-50" aria-label="Whatsapp">
+        <i data-feather="message-circle" class="w-8 h-8"></i>
+    </a>
+
+    <script>
+        // Inicializa os ícones do Feather
+        feather.replace();
+
+        // Lógica para o menu mobile
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+        mobileMenuButton.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+
+        // Lógica para a animação de fade-in ao rolar a página
+        const faders = document.querySelectorAll('.fade-in-on-scroll');
+        const appearOptions = {
+            threshold: 0.2,
+            rootMargin: "0px 0px -50px 0px"
+        };
+
+        const appearOnScroll = new IntersectionObserver(function(entries, observer) {
+            entries.forEach(entry => {
+                if (!entry.isIntersecting) {
+                    return;
+                } else {
+                    // Adiciona um pequeno delay para garantir que a animação seja visível
+                    setTimeout(() => {
+                        entry.target.style.animationPlayState = 'running';
+                    }, 100);
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, appearOptions);
+
+        faders.forEach(fader => {
+            appearOnScroll.observe(fader);
+        });
+    </script>
+
+</body>
+</html>
