@@ -67,6 +67,27 @@
         .status-success { color: #16a34a; }
         .status-error { color: #dc2626; }
         .status-uploading { color: #2563eb; }
+
+        /* Estilos para Accordion */
+        .accordion-header {
+            cursor: pointer;
+            width: 100%;
+            text-align: left;
+            border: none;
+            outline: none;
+            transition: background-color 0.3s ease;
+        }
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease-out;
+        }
+        .accordion-icon {
+            transition: transform 0.3s ease;
+        }
+        .accordion-header.active .accordion-icon {
+            transform: rotate(180deg);
+        }
     </style>
 </head>
 <body class="text-gray-800">
@@ -85,9 +106,22 @@
         </div>
     </div>
 
+    <!-- Confirmation Modal -->
+    <div id="confirm-modal" class="fixed inset-0 bg-gray-900 bg-opacity-60 flex items-center justify-center z-50 hidden">
+        <div class="bg-white p-8 rounded-lg shadow-xl text-center w-full max-w-md">
+            <h2 class="text-xl font-bold mb-4">Confirmar Exclusão</h2>
+            <p id="confirm-modal-text" class="text-gray-600 mb-6">Tem certeza de que deseja excluir esta mídia?</p>
+            <div class="flex justify-center space-x-4">
+                <button id="confirm-cancel-btn" class="px-6 py-2 bg-gray-300 text-gray-800 rounded-lg hover:bg-gray-400 transition-colors">Cancelar</button>
+                <button id="confirm-delete-btn" class="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors">Excluir</button>
+            </div>
+        </div>
+    </div>
+
+
     <!-- Main Content (Hidden by default) -->
     <div id="main-content" class="hidden">
-        <header class="bg-white shadow-md">
+        <header class="bg-white shadow-md sticky top-0 z-40">
             <div class="container mx-auto px-6 py-4 flex justify-between items-center">
                 <h1 class="text-xl font-bold tracking-wider">PAINEL DE ADMINISTRAÇÃO</h1>
                 <button id="logout-button" class="text-sm text-red-600 hover:underline flex items-center space-x-2">
@@ -98,10 +132,10 @@
         </header>
 
         <main class="container mx-auto px-6 py-12">
-            <p class="mb-8 text-gray-600">Atualize as mídias do seu site. Você pode <strong>fazer o upload</strong> de um novo arquivo ou <strong>colar a URL</strong> da imagem/vídeo.</p>
+            <p class="mb-8 text-gray-600">Atualize as mídias do seu site. Clique em uma seção para expandir e ver as opções.</p>
             
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" id="media-grid">
-                <!-- Media cards will be dynamically inserted here -->
+            <div id="admin-sections" class="space-y-4">
+                <!-- Accordion sections will be dynamically inserted here -->
             </div>
         </main>
     </div>
@@ -110,12 +144,11 @@
     <script type="module">
         // Importações do Firebase
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-        import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-storage.js";
+        import { getFirestore, doc, getDoc, setDoc, updateDoc, deleteField } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getStorage, ref, uploadBytesResumable, getDownloadURL, deleteObject } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-storage.js";
         import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
 
-
-        // ATENÇÃO: Cole aqui a configuração do seu projeto Firebase
+        // Cole aqui a configuração do seu projeto Firebase
         const firebaseConfig = {
             apiKey: "AIzaSyBy92mP9erKG-fpjDcAlynaARse5TlYBmw",
             authDomain: "ana-paula-studio.firebaseapp.com",
@@ -131,34 +164,34 @@
         const storage = getStorage(app);
         const auth = getAuth(app);
 
-        // Estrutura de dados das mídias
+        // Estrutura de dados das mídias, agora com seções
         const mediaStructure = [
-            { id: 'heroVideo', title: 'Vídeo Principal (Hero)', type: 'video' },
-            { id: 'aboutBanner', title: 'Banner Sobre Nós', type: 'image' },
-            { id: 'servicesImage', title: 'Imagem de Serviços', type: 'image' },
-            { id: 'product1', title: 'Produto Loja 1', type: 'image' },
-            { id: 'product2', title: 'Produto Loja 2', type: 'image' },
-            { id: 'product3', title: 'Produto Loja 3', type: 'image' },
-            { id: 'artist1', title: 'Artista 1', type: 'image' },
-            { id: 'artist2', title: 'Artista 2', type: 'image' },
-            { id: 'artist3', title: 'Artista 3', type: 'image' },
-            { id: 'inspiration1', title: 'Inspiração 1', type: 'image' },
-            { id: 'inspiration2', title: 'Inspiração 2', type: 'image' },
-            { id: 'inspiration3', title: 'Inspiração 3', type: 'image' },
-            { id: 'inspiration4', title: 'Inspiração 4', type: 'image' },
-            { id: 'inspiration5', title: 'Inspiração 5', type: 'image' },
-            { id: 'momentsVideo1', title: 'Momentos Vídeo 1', type: 'video' },
-            { id: 'momentsVideo2', title: 'Momentos Vídeo 2', type: 'video' },
-            { id: 'momentsVideo3', title: 'Momentos Vídeo 3', type: 'video' },
-            { id: 'momentsVideo4', title: 'Momentos Vídeo 4', type: 'video' },
-            { id: 'momentsVideo5', title: 'Momentos Vídeo 5', type: 'video' },
-            { id: 'momentsVideo6', title: 'Momentos Vídeo 6', type: 'video' },
-            { id: 'bannerFinal', title: 'Banner Final', type: 'image' },
+            { id: 'heroVideo', title: 'Vídeo Principal', type: 'video', section: 'hero', sectionTitle: 'Página Principal (Hero)' },
+            { id: 'aboutBanner', title: 'Banner "Sobre Nós"', type: 'image', section: 'sobre', sectionTitle: 'Seção Sobre' },
+            { id: 'servicesImage', title: 'Imagem de Serviços', type: 'image', section: 'servicos', sectionTitle: 'Seção Serviços' },
+            { id: 'product1', title: 'Produto Loja 1', type: 'image', section: 'loja', sectionTitle: 'Seção Loja' },
+            { id: 'product2', title: 'Produto Loja 2', type: 'image', section: 'loja', sectionTitle: 'Seção Loja' },
+            { id: 'product3', title: 'Produto Loja 3', type: 'image', section: 'loja', sectionTitle: 'Seção Loja' },
+            { id: 'artist1', title: 'Artista 1', type: 'image', section: 'artistas', sectionTitle: 'Seção Artistas' },
+            { id: 'artist2', title: 'Artista 2', type: 'image', section: 'artistas', sectionTitle: 'Seção Artistas' },
+            { id: 'artist3', title: 'Artista 3', type: 'image', section: 'artistas', sectionTitle: 'Seção Artistas' },
+            { id: 'inspiration1', title: 'Inspiração 1', type: 'image', section: 'inspiracoes', sectionTitle: 'Seção Inspirações' },
+            { id: 'inspiration2', title: 'Inspiração 2', type: 'image', section: 'inspiracoes', sectionTitle: 'Seção Inspirações' },
+            { id: 'inspiration3', title: 'Inspiração 3', type: 'image', section: 'inspiracoes', sectionTitle: 'Seção Inspirações' },
+            { id: 'inspiration4', title: 'Inspiração 4', type: 'image', section: 'inspiracoes', sectionTitle: 'Seção Inspirações' },
+            { id: 'inspiration5', title: 'Inspiração 5', type: 'image', section: 'inspiracoes', sectionTitle: 'Seção Inspirações' },
+            { id: 'momentsVideo1', title: 'Momentos Vídeo 1', type: 'video', section: 'momentos', sectionTitle: 'Seção Momentos (Vídeos)' },
+            { id: 'momentsVideo2', title: 'Momentos Vídeo 2', type: 'video', section: 'momentos', sectionTitle: 'Seção Momentos (Vídeos)' },
+            { id: 'momentsVideo3', title: 'Momentos Vídeo 3', type: 'video', section: 'momentos', sectionTitle: 'Seção Momentos (Vídeos)' },
+            { id: 'momentsVideo4', title: 'Momentos Vídeo 4', type: 'video', section: 'momentos', sectionTitle: 'Seção Momentos (Vídeos)' },
+            { id: 'momentsVideo5', title: 'Momentos Vídeo 5', type: 'video', section: 'momentos', sectionTitle: 'Seção Momentos (Vídeos)' },
+            { id: 'momentsVideo6', title: 'Momentos Vídeo 6', type: 'video', section: 'momentos', sectionTitle: 'Seção Momentos (Vídeos)' },
+            { id: 'bannerFinal', title: 'Banner Final', type: 'image', section: 'bannerFinal', sectionTitle: 'Banner Final' },
         ];
 
         const contentDocRef = doc(db, "siteContent", "homepage");
 
-        // Lógica de Autenticação e UI
+        // --- Lógica de Autenticação e UI ---
         const loginOverlay = document.getElementById('login-overlay');
         const mainContent = document.getElementById('main-content');
         const loginButton = document.getElementById('login-button');
@@ -166,8 +199,7 @@
         const passwordInput = document.getElementById('password-input');
         const loginError = document.getElementById('login-error');
         const logoutButton = document.getElementById('logout-button');
-
-        // Observador do estado de autenticação
+        
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 loginOverlay.classList.add('hidden');
@@ -180,21 +212,17 @@
             feather.replace();
         });
 
-        // Evento de clique no botão de login
         loginButton.addEventListener('click', async () => {
             const email = emailInput.value;
             const password = passwordInput.value;
             loginError.textContent = '';
-
             if (!email || !password) {
                 loginError.textContent = 'Por favor, preencha e-mail e senha.';
                 return;
             }
-
             try {
                 await signInWithEmailAndPassword(auth, email, password);
             } catch (error) {
-                console.error("Erro de login:", error.code);
                 loginError.textContent = 'E-mail ou senha inválidos.';
             }
         });
@@ -205,18 +233,11 @@
             });
         });
 
-        // Evento de clique no botão de logout
-        logoutButton.addEventListener('click', async () => {
-            try {
-                await signOut(auth);
-            } catch (error) {
-                console.error("Erro ao fazer logout:", error);
-                alert("Ocorreu um erro ao sair.");
-            }
-        });
+        logoutButton.addEventListener('click', () => signOut(auth));
 
-        // Função para criar os cards de mídia
-        function createMediaCard(media) {
+        // --- Lógica do Painel de Administração ---
+
+        function createMediaCard(media, container) {
             const card = document.createElement('div');
             card.className = 'card p-6 flex flex-col';
             card.innerHTML = `
@@ -225,32 +246,37 @@
                     <div class="media-preview flex items-center justify-center text-gray-500">Carregando...</div>
                 </div>
                 
-                <div class="flex-grow"></div> <!-- Spacer -->
+                <div class="flex-grow"></div>
 
                 <div>
                     <div class="progress-bar mb-2">
                         <div id="progress-${media.id}" class="progress-bar-inner" style="width: 0%;"></div>
                     </div>
                     <p id="status-${media.id}" class="status-message">Pronto.</p>
-                    <label for="file-input-${media.id}" class="file-input-label inline-block mt-4 text-center">Fazer Upload</label>
-                    <input type="file" id="file-input-${media.id}" class="hidden" accept="${media.type}/*">
+                    <div class="flex items-center space-x-2 mt-4">
+                        <label for="file-input-${media.id}" class="file-input-label inline-block text-center flex-grow">Fazer Upload</label>
+                        <input type="file" id="file-input-${media.id}" class="hidden" accept="${media.type}/*">
+                        <button id="delete-btn-${media.id}" class="p-3 bg-red-100 text-red-700 rounded-md hover:bg-red-200 transition-colors" title="Excluir Mídia">
+                            <i data-feather="trash-2" class="w-5 h-5"></i>
+                        </button>
+                    </div>
                 </div>
 
                 <div class="mt-4 pt-4 border-t border-gray-200">
-                    <label for="url-input-${media.id}" class="text-sm font-medium text-gray-700 mb-2 block">Ou insira uma URL:</label>
+                    <label for="url-input-${media.id}" class="text-sm font-medium text-gray-700 mb-2 block">Ou cole uma URL:</label>
                     <div class="flex space-x-2">
                         <input type="url" id="url-input-${media.id}" class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-blue-500" placeholder="https://...">
                         <button id="url-save-btn-${media.id}" class="px-4 py-2 bg-gray-700 text-white text-sm rounded-md hover:bg-gray-800 transition-colors">Salvar</button>
                     </div>
                 </div>
             `;
-            document.getElementById('media-grid').appendChild(card);
+            container.appendChild(card);
+            feather.replace();
             
+            // Event Listeners
             document.getElementById(`file-input-${media.id}`).addEventListener('change', (e) => {
                 const file = e.target.files[0];
-                if (file) {
-                    uploadMedia(media.id, file);
-                }
+                if (file) uploadMedia(media.id, file);
             });
 
             document.getElementById(`url-save-btn-${media.id}`).addEventListener('click', () => {
@@ -264,40 +290,37 @@
                     statusEl.className = 'status-message status-error';
                 }
             });
+
+            document.getElementById(`delete-btn-${media.id}`).addEventListener('click', () => {
+                showDeleteConfirm(media.id, media.title);
+            });
         }
         
-        // Função para salvar a URL diretamente
         async function saveUrl(id, url) {
             const statusEl = document.getElementById(`status-${id}`);
             statusEl.textContent = 'Salvando URL...';
             statusEl.className = 'status-message status-uploading';
-
             try {
-                // Validação básica se a string parece uma URL
                 if (!url.startsWith('http://') && !url.startsWith('https://')) {
-                    throw new Error("URL inválida. Deve começar com http:// ou https://");
+                    throw new Error("URL inválida.");
                 }
-                
                 await setDoc(contentDocRef, { [id]: url }, { merge: true });
                 statusEl.textContent = 'Sucesso! URL atualizada.';
                 statusEl.className = 'status-message status-success';
                 updatePreview(id, url);
-                document.getElementById(`url-input-${id}`).value = ''; // Limpa o input
-
+                document.getElementById(`url-input-${id}`).value = '';
             } catch (error) {
-                console.error("Erro ao salvar URL: ", error);
                 statusEl.textContent = 'Erro ao salvar. Verifique a URL.';
                 statusEl.className = 'status-message status-error';
             }
         }
-
-        // Função para atualizar o preview
+        
         function updatePreview(mediaId, url) {
             const previewContainer = document.getElementById(`preview-container-${mediaId}`);
             const mediaType = mediaStructure.find(m => m.id === mediaId).type;
             if (url) {
                 if (mediaType === 'video') {
-                    previewContainer.innerHTML = `<video src="${url}" class="media-preview" controls muted loop></video>`;
+                    previewContainer.innerHTML = `<video src="${url}" class="media-preview" controls muted loop playsinline></video>`;
                 } else {
                     previewContainer.innerHTML = `<img src="${url}" alt="${mediaId}" class="media-preview">`;
                 }
@@ -306,25 +329,15 @@
             }
         }
 
-        // Função para carregar os dados atuais do Firestore
-        async function loadCurrentMedia() {
-            try {
-                const docSnap = await getDoc(contentDocRef);
-                const data = docSnap.exists() ? docSnap.data() : {};
-                mediaStructure.forEach(media => {
-                    updatePreview(media.id, data[media.id]);
-                });
-            } catch (error) {
-                console.error("Erro ao carregar mídias: ", error);
-                alert("Não foi possível carregar os dados do site.");
-            }
+        async function loadCurrentMedia(mediaData) {
+            mediaStructure.forEach(media => {
+                updatePreview(media.id, mediaData[media.id]);
+            });
         }
         
-        // Função para fazer upload da mídia
         function uploadMedia(id, file) {
             const statusEl = document.getElementById(`status-${id}`);
             const progressEl = document.getElementById(`progress-${id}`);
-
             const storageRef = ref(storage, `site-media/${id}-${Date.now()}-${file.name}`);
             const uploadTask = uploadBytesResumable(storageRef, file);
 
@@ -336,8 +349,7 @@
                     statusEl.className = 'status-message status-uploading';
                 }, 
                 (error) => {
-                    console.error("Erro no upload: ", error);
-                    statusEl.textContent = 'Erro no envio. Tente novamente.';
+                    statusEl.textContent = 'Erro no envio.';
                     statusEl.className = 'status-message status-error';
                     progressEl.style.width = '0%';
                 }, 
@@ -350,7 +362,6 @@
                             statusEl.className = 'status-message status-success';
                             updatePreview(id, downloadURL);
                         } catch (dbError) {
-                            console.error("Erro ao salvar no Firestore: ", dbError);
                             statusEl.textContent = 'Erro ao salvar o link.';
                             statusEl.className = 'status-message status-error';
                         }
@@ -359,12 +370,116 @@
             );
         }
 
-        // Função principal de inicialização do painel
-        function initAdminPanel() {
-            const grid = document.getElementById('media-grid');
-            if (grid.children.length === 0) {
-                mediaStructure.forEach(createMediaCard);
-                loadCurrentMedia();
+        async function deleteMedia(id) {
+            const statusEl = document.getElementById(`status-${id}`);
+            statusEl.textContent = 'Excluindo...';
+            statusEl.className = 'status-message status-uploading';
+            try {
+                // Opcional: Excluir o arquivo do Storage. Requer lógica mais complexa
+                // para obter a URL do arquivo a partir do nome, se não estiver armazenada.
+                // Por simplicidade, vamos apenas remover do Firestore.
+
+                const fieldToDelete = { [id]: deleteField() };
+                await updateDoc(contentDocRef, fieldToDelete);
+                
+                statusEl.textContent = 'Mídia excluída com sucesso.';
+                statusEl.className = 'status-message status-success';
+                updatePreview(id, null); // Limpa o preview
+            } catch (error) {
+                console.error("Erro ao excluir mídia:", error);
+                statusEl.textContent = 'Erro ao excluir.';
+                statusEl.className = 'status-message status-error';
+            }
+        }
+
+        // --- Lógica do Modal de Confirmação ---
+        const confirmModal = document.getElementById('confirm-modal');
+        const confirmModalText = document.getElementById('confirm-modal-text');
+        const confirmCancelBtn = document.getElementById('confirm-cancel-btn');
+        const confirmDeleteBtn = document.getElementById('confirm-delete-btn');
+        let mediaIdToDelete = null;
+
+        function showDeleteConfirm(id, title) {
+            mediaIdToDelete = id;
+            confirmModalText.textContent = `Tem certeza de que deseja excluir a mídia "${title}"? Esta ação não pode ser desfeita.`;
+            confirmModal.classList.remove('hidden');
+        }
+
+        function hideDeleteConfirm() {
+            mediaIdToDelete = null;
+            confirmModal.classList.add('hidden');
+        }
+
+        confirmCancelBtn.addEventListener('click', hideDeleteConfirm);
+        confirmDeleteBtn.addEventListener('click', () => {
+            if (mediaIdToDelete) {
+                deleteMedia(mediaIdToDelete);
+            }
+            hideDeleteConfirm();
+        });
+
+
+        // --- Função Principal de Inicialização ---
+        async function initAdminPanel() {
+            const sectionsContainer = document.getElementById('admin-sections');
+            if (sectionsContainer.children.length > 0) return; // Já inicializado
+
+            try {
+                const docSnap = await getDoc(contentDocRef);
+                const mediaData = docSnap.exists() ? docSnap.data() : {};
+
+                const sections = mediaStructure.reduce((acc, media) => {
+                    (acc[media.sectionTitle] = acc[media.sectionTitle] || []).push(media);
+                    return acc;
+                }, {});
+
+                for (const sectionTitle in sections) {
+                    const sectionItems = sections[sectionTitle];
+                    
+                    // Cria o container da seção
+                    const sectionWrapper = document.createElement('div');
+                    sectionWrapper.className = 'bg-white rounded-lg shadow-sm';
+                    
+                    // Cria o cabeçalho do accordion
+                    const header = document.createElement('button');
+                    header.className = 'accordion-header w-full p-5 flex justify-between items-center bg-gray-50 hover:bg-gray-100 rounded-lg';
+                    header.innerHTML = `
+                        <h2 class="text-xl font-semibold">${sectionTitle}</h2>
+                        <i data-feather="chevron-down" class="accordion-icon"></i>
+                    `;
+                    
+                    // Cria o conteúdo do accordion
+                    const content = document.createElement('div');
+                    content.className = 'accordion-content p-6 pt-0';
+                    
+                    const grid = document.createElement('div');
+                    grid.className = 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8';
+                    content.appendChild(grid);
+                    
+                    sectionWrapper.appendChild(header);
+                    sectionWrapper.appendChild(content);
+                    sectionsContainer.appendChild(sectionWrapper);
+                    
+                    // Popula com os cards
+                    sectionItems.forEach(media => createMediaCard(media, grid));
+
+                    // Lógica do accordion
+                    header.addEventListener('click', () => {
+                        header.classList.toggle('active');
+                        if (content.style.maxHeight) {
+                            content.style.maxHeight = null;
+                        } else {
+                            content.style.maxHeight = content.scrollHeight + "px";
+                        }
+                    });
+                }
+                
+                loadCurrentMedia(mediaData);
+                feather.replace();
+
+            } catch (error) {
+                console.error("Erro ao inicializar o painel: ", error);
+                sectionsContainer.innerHTML = `<p class="text-red-500">Não foi possível carregar os dados do site. Verifique o console para mais detalhes.</p>`;
             }
         }
     </script>
