@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel de Administração | Studio Ana Paula Batista</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Feather Icons -->
+    <script src="https://unpkg.com/feather-icons"></script>
+
+    <style>
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: #f7fafc;
+        }
+        .card {
+            background-color: white;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            transition: all 0.3s ease;
+        }
+        .card:hover {
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+        }
+        .progress-bar {
+            height: 8px;
+            background-color: #e5e7eb;
+            border-radius: 9999px;
+            overflow: hidden;
+        }
+        .progress-bar-inner {
+            height: 100%;
+            background-color: #3b82f6;
+            transition: width 0.3s ease;
+        }
+        .media-preview {
+            max-height: 250px;
+            width: 100%;
+            object-fit: cover;
+            border-radius: 0.5rem;
+            background-color: #f3f4f6;
+        }
+        .file-input-label {
+            cursor: pointer;
+            padding: 0.75rem 1.5rem;
+            background-color: #1f2937;
+            color: white;
+            border-radius: 0.5rem;
+            transition: background-color 0.2s;
+        }
+        .file-input-label:hover {
+            background-color: #374151;
+        }
+        .status-message {
+            font-size: 0.875rem;
+            margin-top: 0.5rem;
+            min-height: 1.25rem;
+        }
+        .status-success { color: #16a34a; }
+        .status-error { color: #dc2626; }
+        .status-uploading { color: #2563eb; }
+    </style>
+</head>
+<body class="text-gray-800">
+
+    <!-- Login Overlay -->
+    <div id="login-overlay" class="fixed inset-0 bg-gray-900 bg-opacity-80 flex items-center justify-center z-50">
+        <div class="bg-white p-8 rounded-lg shadow-xl text-center w-full max-w-sm">
+            <h2 class="text-2xl font-bold mb-4">Acesso Restrito</h2>
+            <p class="text-gray-600 mb-6">Faça login para gerenciar o conteúdo.</p>
+            <div class="space-y-4">
+                 <input type="email" id="email-input" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="E-mail">
+                <input type="password" id="password-input" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Senha">
+            </div>
+            <button id="login-button" class="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors mt-6">Entrar</button>
+            <p id="login-error" class="text-red-500 text-sm mt-4 h-4"></p>
+        </div>
+    </div>
+
+    <!-- Main Content (Hidden by default) -->
+    <div id="main-content" class="hidden">
+        <header class="bg-white shadow-md">
+            <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+                <h1 class="text-xl font-bold tracking-wider">PAINEL DE ADMINISTRAÇÃO</h1>
+                <button id="logout-button" class="text-sm text-red-600 hover:underline flex items-center space-x-2">
+                    <i data-feather="log-out" class="w-4 h-4"></i>
+                    <span>Sair</span>
+                </button>
+            </div>
+        </header>
+
+        <main class="container mx-auto px-6 py-12">
+            <p class="mb-8 text-gray-600">Aqui você pode atualizar as imagens e vídeos do seu site. Clique em "Escolher arquivo", selecione a nova mídia e o envio começará automaticamente.</p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" id="media-grid">
+                <!-- Media cards will be dynamically inserted here -->
+            </div>
+        </main>
+    </div>
+
+    <!-- Firebase SDKs -->
+    <script type="module">
+        // Importações do Firebase
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-storage.js";
+        import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+
+
+        // ATENÇÃO: Cole aqui a configuração do seu projeto Firebase
+        // Você pode encontrar em: Configurações do projeto > Geral > Seus apps > App da Web > SDK do Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyBy92mP9erKG-fpjDcAlynaARse5TlYBmw",
+            authDomain: "SEU_AUTH_DOMAIN",
+            projectId: "ana-paula-studio", // Já preenchido com o seu ID de projeto
+            storageBucket: "SEU_STORAGE_BUCKET",
+            messagingSenderId: "SEU_MESSAGING_SENDER_ID",
+            appId: "SEU_APP_ID"
+        };
+
+        // Inicialização do Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const storage = getStorage(app);
+        const auth = getAuth(app);
+
+        // Estrutura de dados das mídias
+        const mediaStructure = [
+            { id: 'heroVideo', title: 'Vídeo Principal (Hero)', type: 'video' },
+            { id: 'aboutBanner', title: 'Banner Sobre Nós', type: 'image' },
+            { id: 'servicesImage', title: 'Imagem de Serviços', type: 'image' },
+            { id: 'product1', title: 'Produto Loja 1', type: 'image' },
+            { id: 'product2', title: 'Produto Loja 2', type: 'image' },
+            { id: 'product3', title: 'Produto Loja 3', type: 'image' },
+            { id: 'artist1', title: 'Artista 1', type: 'image' },
+            { id: 'artist2', title: 'Artista 2', type: 'image' },
+            { id: 'artist3', title: 'Artista 3', type: 'image' },
+            { id: 'inspiration1', title: 'Inspiração 1', type: 'image' },
+            { id: 'inspiration2', title: 'Inspiração 2', type: 'image' },
+            { id: 'inspiration3', title: 'Inspiração 3', type: 'image' },
+            { id: 'inspiration4', title: 'Inspiração 4', type: 'image' },
+            { id: 'inspiration5', title: 'Inspiração 5', type: 'image' },
+            { id: 'momentsVideo1', title: 'Momentos Vídeo 1', type: 'video' },
+            { id: 'momentsVideo2', title: 'Momentos Vídeo 2', type: 'video' },
+            { id: 'momentsVideo3', title: 'Momentos Vídeo 3', type: 'video' },
+            { id: 'momentsVideo4', title: 'Momentos Vídeo 4', type: 'video' },
+            { id: 'momentsVideo5', title: 'Momentos Vídeo 5', type: 'video' },
+            { id: 'momentsVideo6', title: 'Momentos Vídeo 6', type: 'video' },
+            { id: 'bannerFinal', title: 'Banner Final', type: 'image' },
+        ];
+
+        const contentDocRef = doc(db, "siteContent", "homepage");
+
+        // Lógica de Autenticação e UI
+        const loginOverlay = document.getElementById('login-overlay');
+        const mainContent = document.getElementById('main-content');
+        const loginButton = document.getElementById('login-button');
+        const emailInput = document.getElementById('email-input');
+        const passwordInput = document.getElementById('password-input');
+        const loginError = document.getElementById('login-error');
+        const logoutButton = document.getElementById('logout-button');
+
+        // Observador do estado de autenticação
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                // Usuário está logado
+                loginOverlay.classList.add('hidden');
+                mainContent.classList.remove('hidden');
+                initAdminPanel();
+            } else {
+                // Usuário está deslogado
+                loginOverlay.classList.remove('hidden');
+                mainContent.classList.add('hidden');
+            }
+            feather.replace(); // Atualiza os ícones
+        });
+
+        // Evento de clique no botão de login
+        loginButton.addEventListener('click', async () => {
+            const email = emailInput.value;
+            const password = passwordInput.value;
+            loginError.textContent = ''; // Limpa erros anteriores
+
+            if (!email || !password) {
+                loginError.textContent = 'Por favor, preencha e-mail e senha.';
+                return;
+            }
+
+            try {
+                await signInWithEmailAndPassword(auth, email, password);
+                // O onAuthStateChanged vai cuidar de mostrar o painel
+            } catch (error) {
+                console.error("Erro de login:", error.code);
+                switch (error.code) {
+                    case 'auth/user-not-found':
+                    case 'auth/wrong-password':
+                    case 'auth/invalid-credential':
+                        loginError.textContent = 'E-mail ou senha inválidos.';
+                        break;
+                    default:
+                        loginError.textContent = 'Ocorreu um erro ao fazer login.';
+                        break;
+                }
+            }
+        });
+
+        // Permite login com a tecla Enter
+        passwordInput.addEventListener('keyup', (e) => {
+            if (e.key === 'Enter') loginButton.click();
+        });
+        emailInput.addEventListener('keyup', (e) => {
+            if (e.key === 'Enter') loginButton.click();
+        });
+
+        // Evento de clique no botão de logout
+        logoutButton.addEventListener('click', async () => {
+            try {
+                await signOut(auth);
+                // O onAuthStateChanged vai cuidar de mostrar a tela de login
+            } catch (error) {
+                console.error("Erro ao fazer logout:", error);
+                alert("Ocorreu um erro ao sair.");
+            }
+        });
+
+
+        // Função para criar os cards de mídia
+        function createMediaCard(media) {
+            const card = document.createElement('div');
+            card.className = 'card p-6';
+            card.innerHTML = `
+                <h3 class="text-lg font-bold mb-4">${media.title}</h3>
+                <div id="preview-container-${media.id}" class="mb-4">
+                    <!-- Preview will be loaded here -->
+                </div>
+                <div class="progress-bar mb-2">
+                    <div id="progress-${media.id}" class="progress-bar-inner" style="width: 0%;"></div>
+                </div>
+                <p id="status-${media.id}" class="status-message">Pronto para envio.</p>
+                <label for="file-input-${media.id}" class="file-input-label inline-block mt-4">Escolher arquivo</label>
+                <input type="file" id="file-input-${media.id}" class="hidden" accept="${media.type}/*">
+            `;
+            document.getElementById('media-grid').appendChild(card);
+            
+            document.getElementById(`file-input-${media.id}`).addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    uploadMedia(media.id, file);
+                }
+            });
+        }
+
+        // Função para carregar os dados atuais do Firestore
+        async function loadCurrentMedia() {
+            try {
+                const docSnap = await getDoc(contentDocRef);
+                const data = docSnap.exists() ? docSnap.data() : {};
+
+                mediaStructure.forEach(media => {
+                    const previewContainer = document.getElementById(`preview-container-${media.id}`);
+                    const url = data[media.id];
+                    if (url) {
+                        if (media.type === 'video') {
+                            previewContainer.innerHTML = `<video src="${url}" class="media-preview" controls muted loop></video>`;
+                        } else {
+                            previewContainer.innerHTML = `<img src="${url}" alt="${media.title}" class="media-preview">`;
+                        }
+                    } else {
+                         previewContainer.innerHTML = `<div class="media-preview flex items-center justify-center text-gray-500">Nenhuma mídia definida</div>`;
+                    }
+                });
+
+            } catch (error) {
+                console.error("Erro ao carregar mídias: ", error);
+                alert("Não foi possível carregar os dados do site. Verifique o console para mais detalhes.");
+            }
+        }
+        
+        // Função para fazer upload da mídia
+        function uploadMedia(id, file) {
+            const statusEl = document.getElementById(`status-${id}`);
+            const progressEl = document.getElementById(`progress-${id}`);
+            const previewContainer = document.getElementById(`preview-container-${id}`);
+
+            const storageRef = ref(storage, `site-media/${id}-${Date.now()}-${file.name}`);
+            const uploadTask = uploadBytesResumable(storageRef, file);
+
+            uploadTask.on('state_changed', 
+                (snapshot) => {
+                    const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                    progressEl.style.width = progress + '%';
+                    statusEl.textContent = `Enviando... ${Math.round(progress)}%`;
+                    statusEl.className = 'status-message status-uploading';
+                }, 
+                (error) => {
+                    console.error("Erro no upload: ", error);
+                    statusEl.textContent = 'Erro no envio. Tente novamente.';
+                    statusEl.className = 'status-message status-error';
+                }, 
+                () => {
+                    getDownloadURL(uploadTask.snapshot.ref).then(async (downloadURL) => {
+                        statusEl.textContent = 'Atualizando link...';
+                        
+                        try {
+                            await setDoc(contentDocRef, { [id]: downloadURL }, { merge: true });
+                            
+                            statusEl.textContent = 'Sucesso! Mídia atualizada.';
+                            statusEl.className = 'status-message status-success';
+                            
+                            const mediaType = mediaStructure.find(m => m.id === id).type;
+                            if (mediaType === 'video') {
+                                previewContainer.innerHTML = `<video src="${downloadURL}" class="media-preview" controls muted loop></video>`;
+                            } else {
+                                previewContainer.innerHTML = `<img src="${downloadURL}" alt="${id}" class="media-preview">`;
+                            }
+
+                        } catch (error) {
+                            console.error("Erro ao salvar no Firestore: ", error);
+                            statusEl.textContent = 'Erro ao salvar o link.';
+                            statusEl.className = 'status-message status-error';
+                        }
+                    });
+                }
+            );
+        }
+
+        // Função principal de inicialização do painel
+        function initAdminPanel() {
+            const grid = document.getElementById('media-grid');
+            if (grid.children.length === 0) { // Só carrega se o grid estiver vazio
+                mediaStructure.forEach(createMediaCard);
+                loadCurrentMedia();
+            }
+        }
+
+    </script>
+</body>
+</html>
