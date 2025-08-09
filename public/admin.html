@@ -98,7 +98,7 @@
         </header>
 
         <main class="container mx-auto px-6 py-12">
-            <p class="mb-8 text-gray-600">Aqui você pode atualizar as imagens e vídeos do seu site. Clique em "Escolher arquivo", selecione a nova mídia e o envio começará automaticamente.</p>
+            <p class="mb-8 text-gray-600">Atualize as mídias do seu site. Você pode <strong>fazer o upload</strong> de um novo arquivo ou <strong>colar a URL</strong> da imagem/vídeo.</p>
             
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" id="media-grid">
                 <!-- Media cards will be dynamically inserted here -->
@@ -116,14 +116,13 @@
 
 
         // ATENÇÃO: Cole aqui a configuração do seu projeto Firebase
-        // Você pode encontrar em: Configurações do projeto > Geral > Seus apps > App da Web > SDK do Firebase
         const firebaseConfig = {
             apiKey: "AIzaSyBy92mP9erKG-fpjDcAlynaARse5TlYBmw",
-            authDomain: "SEU_AUTH_DOMAIN",
-            projectId: "ana-paula-studio", // Já preenchido com o seu ID de projeto
-            storageBucket: "SEU_STORAGE_BUCKET",
-            messagingSenderId: "SEU_MESSAGING_SENDER_ID",
-            appId: "SEU_APP_ID"
+            authDomain: "ana-paula-studio.firebaseapp.com",
+            projectId: "ana-paula-studio",
+            storageBucket: "ana-paula-studio.appspot.com",
+            messagingSenderId: "1083569634551",
+            appId: "1:1083569634551:web:8a433a76389753e6831d38"
         };
 
         // Inicialização do Firebase
@@ -171,23 +170,21 @@
         // Observador do estado de autenticação
         onAuthStateChanged(auth, (user) => {
             if (user) {
-                // Usuário está logado
                 loginOverlay.classList.add('hidden');
                 mainContent.classList.remove('hidden');
                 initAdminPanel();
             } else {
-                // Usuário está deslogado
                 loginOverlay.classList.remove('hidden');
                 mainContent.classList.add('hidden');
             }
-            feather.replace(); // Atualiza os ícones
+            feather.replace();
         });
 
         // Evento de clique no botão de login
         loginButton.addEventListener('click', async () => {
             const email = emailInput.value;
             const password = passwordInput.value;
-            loginError.textContent = ''; // Limpa erros anteriores
+            loginError.textContent = '';
 
             if (!email || !password) {
                 loginError.textContent = 'Por favor, preencha e-mail e senha.';
@@ -196,57 +193,56 @@
 
             try {
                 await signInWithEmailAndPassword(auth, email, password);
-                // O onAuthStateChanged vai cuidar de mostrar o painel
             } catch (error) {
                 console.error("Erro de login:", error.code);
-                switch (error.code) {
-                    case 'auth/user-not-found':
-                    case 'auth/wrong-password':
-                    case 'auth/invalid-credential':
-                        loginError.textContent = 'E-mail ou senha inválidos.';
-                        break;
-                    default:
-                        loginError.textContent = 'Ocorreu um erro ao fazer login.';
-                        break;
-                }
+                loginError.textContent = 'E-mail ou senha inválidos.';
             }
         });
-
-        // Permite login com a tecla Enter
-        passwordInput.addEventListener('keyup', (e) => {
-            if (e.key === 'Enter') loginButton.click();
-        });
-        emailInput.addEventListener('keyup', (e) => {
-            if (e.key === 'Enter') loginButton.click();
+        
+        [emailInput, passwordInput].forEach(input => {
+            input.addEventListener('keyup', (e) => {
+                if (e.key === 'Enter') loginButton.click();
+            });
         });
 
         // Evento de clique no botão de logout
         logoutButton.addEventListener('click', async () => {
             try {
                 await signOut(auth);
-                // O onAuthStateChanged vai cuidar de mostrar a tela de login
             } catch (error) {
                 console.error("Erro ao fazer logout:", error);
                 alert("Ocorreu um erro ao sair.");
             }
         });
 
-
         // Função para criar os cards de mídia
         function createMediaCard(media) {
             const card = document.createElement('div');
-            card.className = 'card p-6';
+            card.className = 'card p-6 flex flex-col';
             card.innerHTML = `
                 <h3 class="text-lg font-bold mb-4">${media.title}</h3>
                 <div id="preview-container-${media.id}" class="mb-4">
-                    <!-- Preview will be loaded here -->
+                    <div class="media-preview flex items-center justify-center text-gray-500">Carregando...</div>
                 </div>
-                <div class="progress-bar mb-2">
-                    <div id="progress-${media.id}" class="progress-bar-inner" style="width: 0%;"></div>
+                
+                <div class="flex-grow"></div> <!-- Spacer -->
+
+                <div>
+                    <div class="progress-bar mb-2">
+                        <div id="progress-${media.id}" class="progress-bar-inner" style="width: 0%;"></div>
+                    </div>
+                    <p id="status-${media.id}" class="status-message">Pronto.</p>
+                    <label for="file-input-${media.id}" class="file-input-label inline-block mt-4 text-center">Fazer Upload</label>
+                    <input type="file" id="file-input-${media.id}" class="hidden" accept="${media.type}/*">
                 </div>
-                <p id="status-${media.id}" class="status-message">Pronto para envio.</p>
-                <label for="file-input-${media.id}" class="file-input-label inline-block mt-4">Escolher arquivo</label>
-                <input type="file" id="file-input-${media.id}" class="hidden" accept="${media.type}/*">
+
+                <div class="mt-4 pt-4 border-t border-gray-200">
+                    <label for="url-input-${media.id}" class="text-sm font-medium text-gray-700 mb-2 block">Ou insira uma URL:</label>
+                    <div class="flex space-x-2">
+                        <input type="url" id="url-input-${media.id}" class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-blue-500" placeholder="https://...">
+                        <button id="url-save-btn-${media.id}" class="px-4 py-2 bg-gray-700 text-white text-sm rounded-md hover:bg-gray-800 transition-colors">Salvar</button>
+                    </div>
+                </div>
             `;
             document.getElementById('media-grid').appendChild(card);
             
@@ -256,6 +252,58 @@
                     uploadMedia(media.id, file);
                 }
             });
+
+            document.getElementById(`url-save-btn-${media.id}`).addEventListener('click', () => {
+                const urlInput = document.getElementById(`url-input-${media.id}`);
+                const newUrl = urlInput.value.trim();
+                if (newUrl) {
+                    saveUrl(media.id, newUrl);
+                } else {
+                    const statusEl = document.getElementById(`status-${media.id}`);
+                    statusEl.textContent = 'Por favor, insira uma URL válida.';
+                    statusEl.className = 'status-message status-error';
+                }
+            });
+        }
+        
+        // Função para salvar a URL diretamente
+        async function saveUrl(id, url) {
+            const statusEl = document.getElementById(`status-${id}`);
+            statusEl.textContent = 'Salvando URL...';
+            statusEl.className = 'status-message status-uploading';
+
+            try {
+                // Validação básica se a string parece uma URL
+                if (!url.startsWith('http://') && !url.startsWith('https://')) {
+                    throw new Error("URL inválida. Deve começar com http:// ou https://");
+                }
+                
+                await setDoc(contentDocRef, { [id]: url }, { merge: true });
+                statusEl.textContent = 'Sucesso! URL atualizada.';
+                statusEl.className = 'status-message status-success';
+                updatePreview(id, url);
+                document.getElementById(`url-input-${id}`).value = ''; // Limpa o input
+
+            } catch (error) {
+                console.error("Erro ao salvar URL: ", error);
+                statusEl.textContent = 'Erro ao salvar. Verifique a URL.';
+                statusEl.className = 'status-message status-error';
+            }
+        }
+
+        // Função para atualizar o preview
+        function updatePreview(mediaId, url) {
+            const previewContainer = document.getElementById(`preview-container-${mediaId}`);
+            const mediaType = mediaStructure.find(m => m.id === mediaId).type;
+            if (url) {
+                if (mediaType === 'video') {
+                    previewContainer.innerHTML = `<video src="${url}" class="media-preview" controls muted loop></video>`;
+                } else {
+                    previewContainer.innerHTML = `<img src="${url}" alt="${mediaId}" class="media-preview">`;
+                }
+            } else {
+                previewContainer.innerHTML = `<div class="media-preview flex items-center justify-center text-gray-500">Nenhuma mídia definida</div>`;
+            }
         }
 
         // Função para carregar os dados atuais do Firestore
@@ -263,24 +311,12 @@
             try {
                 const docSnap = await getDoc(contentDocRef);
                 const data = docSnap.exists() ? docSnap.data() : {};
-
                 mediaStructure.forEach(media => {
-                    const previewContainer = document.getElementById(`preview-container-${media.id}`);
-                    const url = data[media.id];
-                    if (url) {
-                        if (media.type === 'video') {
-                            previewContainer.innerHTML = `<video src="${url}" class="media-preview" controls muted loop></video>`;
-                        } else {
-                            previewContainer.innerHTML = `<img src="${url}" alt="${media.title}" class="media-preview">`;
-                        }
-                    } else {
-                         previewContainer.innerHTML = `<div class="media-preview flex items-center justify-center text-gray-500">Nenhuma mídia definida</div>`;
-                    }
+                    updatePreview(media.id, data[media.id]);
                 });
-
             } catch (error) {
                 console.error("Erro ao carregar mídias: ", error);
-                alert("Não foi possível carregar os dados do site. Verifique o console para mais detalhes.");
+                alert("Não foi possível carregar os dados do site.");
             }
         }
         
@@ -288,7 +324,6 @@
         function uploadMedia(id, file) {
             const statusEl = document.getElementById(`status-${id}`);
             const progressEl = document.getElementById(`progress-${id}`);
-            const previewContainer = document.getElementById(`preview-container-${id}`);
 
             const storageRef = ref(storage, `site-media/${id}-${Date.now()}-${file.name}`);
             const uploadTask = uploadBytesResumable(storageRef, file);
@@ -304,26 +339,18 @@
                     console.error("Erro no upload: ", error);
                     statusEl.textContent = 'Erro no envio. Tente novamente.';
                     statusEl.className = 'status-message status-error';
+                    progressEl.style.width = '0%';
                 }, 
                 () => {
                     getDownloadURL(uploadTask.snapshot.ref).then(async (downloadURL) => {
                         statusEl.textContent = 'Atualizando link...';
-                        
                         try {
                             await setDoc(contentDocRef, { [id]: downloadURL }, { merge: true });
-                            
                             statusEl.textContent = 'Sucesso! Mídia atualizada.';
                             statusEl.className = 'status-message status-success';
-                            
-                            const mediaType = mediaStructure.find(m => m.id === id).type;
-                            if (mediaType === 'video') {
-                                previewContainer.innerHTML = `<video src="${downloadURL}" class="media-preview" controls muted loop></video>`;
-                            } else {
-                                previewContainer.innerHTML = `<img src="${downloadURL}" alt="${id}" class="media-preview">`;
-                            }
-
-                        } catch (error) {
-                            console.error("Erro ao salvar no Firestore: ", error);
+                            updatePreview(id, downloadURL);
+                        } catch (dbError) {
+                            console.error("Erro ao salvar no Firestore: ", dbError);
                             statusEl.textContent = 'Erro ao salvar o link.';
                             statusEl.className = 'status-message status-error';
                         }
@@ -335,12 +362,11 @@
         // Função principal de inicialização do painel
         function initAdminPanel() {
             const grid = document.getElementById('media-grid');
-            if (grid.children.length === 0) { // Só carrega se o grid estiver vazio
+            if (grid.children.length === 0) {
                 mediaStructure.forEach(createMediaCard);
                 loadCurrentMedia();
             }
         }
-
     </script>
 </body>
 </html>

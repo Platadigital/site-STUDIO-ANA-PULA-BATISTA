@@ -54,6 +54,7 @@
             height: 100%;
             overflow: hidden;
             z-index: 0; 
+            background-color: #cccccc; /* Cor de fallback */
         }
         #hero-video {
             width: 100%;
@@ -70,8 +71,6 @@
         }
         .video-carousel-track {
             display: flex;
-            width: calc(320px * 12); /* Largura do item * (6 vídeos originais + 6 clones) */
-            animation: scroll 40s linear infinite;
         }
         .video-carousel-item {
             width: 300px;
@@ -81,12 +80,16 @@
             border-radius: 1rem;
             overflow: hidden;
             box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            background-color: #e0e0e0; /* Cor de fallback */
+        }
+        .scrolling-animation {
+             animation: scroll 40s linear infinite;
         }
         @keyframes scroll {
             from { transform: translateX(0); }
             to { transform: translateX(calc(-320px * 6)); } /* Metade da largura total (item + margem) */
         }
-        .video-carousel-container:hover .video-carousel-track {
+        .video-carousel-container:hover .scrolling-animation {
             animation-play-state: paused;
         }
         
@@ -124,6 +127,9 @@
             -webkit-text-stroke: 1px white;
             text-stroke: 1px white;
             text-shadow: 1px 1px 6px rgba(0,0,0,0.6);
+        }
+        .placeholder-bg {
+             background-color: #EAE8E4;
         }
     </style>
 </head>
@@ -171,7 +177,7 @@
         <section id="inicio" class="relative w-full h-screen flex items-center justify-center">
             <div id="hero-video-container">
                 <video autoplay loop muted playsinline id="hero-video">
-                    <source src="https://firebasestorage.googleapis.com/v0/b/platamais.firebasestorage.app/o/projeto%20vm%2FCopy%20of%20P%20(1).mp4?alt=media&token=82f97b6a-c208-4def-b92f-e74adb992096" type="video/mp4">
+                    <source id="heroVideo" src="https://firebasestorage.googleapis.com/v0/b/platamais.firebasestorage.app/o/projeto%20vm%2FCopy%20of%20P%20(1).mp4?alt=media&token=82f97b6a-c208-4def-b92f-e74adb992096" type="video/mp4">
                     O seu navegador não suporta o elemento de vídeo.
                 </video>
             </div>
@@ -186,7 +192,7 @@
         </section>
 
         <!-- Full-width Image Banner -->
-        <section class="h-[60vh] bg-cover bg-center bg-fixed flex items-center justify-center text-white" style="background-image: url('https://firebasestorage.googleapis.com/v0/b/platamais.firebasestorage.app/o/projeto%20vm%2F357576012_18370232662011495_6867085430422208779_n..jpg?alt=media&token=e90b1893-961d-4ba4-b27c-84266b03d586');">
+        <section id="aboutBanner" class="h-[60vh] bg-cover bg-center bg-fixed flex items-center justify-center text-white" style="background-image: url('https://firebasestorage.googleapis.com/v0/b/platamais.firebasestorage.app/o/projeto%20vm%2F357576012_18370232662011495_6867085430422208779_n..jpg?alt=media&token=e90b1893-961d-4ba4-b27c-84266b03d586');">
             <div class="text-center fade-in-on-scroll">
                 <p class="max-w-3xl mx-auto text-lg md:text-xl text-white leading-relaxed">
                     A beleza está na alma, nos sonhos e no coração. Nós chegamos para ir além do serviço, nosso propósito está no sentir. Somos o <strong>STUDIO ANA PAULA BATISTA</strong>, um refúgio de beleza e bem-estar em Campo Grande - Mato Grosso do Sul!
@@ -200,7 +206,7 @@
                 <h2 class="text-4xl md:text-5xl font-serif text-center mb-16 fade-in-on-scroll">Nossos Serviços</h2>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
                     <div class="fade-in-on-scroll delay-1">
-                        <img src="https://images.pexels.com/photos/3993449/pexels-photo-3993449.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2" alt="Mulher recebendo tratamento capilar" class="rounded-lg shadow-lg object-cover w-full h-full" onerror="this.onerror=null;this.src='https://placehold.co/600x800/EAE8E4/3D3D3D?text=Serviços';">
+                        <img id="servicesImage" src="https://images.pexels.com/photos/3993449/pexels-photo-3993449.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2" alt="Mulher recebendo tratamento capilar" class="rounded-lg shadow-lg object-cover w-full h-full" onerror="this.onerror=null;this.src='https://placehold.co/600x800/EAE8E4/3D3D3D?text=Serviços';">
                     </div>
                     <div class="fade-in-on-scroll delay-2">
                         <p class="text-lg text-gray-600 mb-8">Cada serviço é uma experiência, realizada com técnicas de ponta e produtos da mais alta qualidade para realçar sua beleza natural.</p>
@@ -226,7 +232,7 @@
                     <!-- Product 1 -->
                     <div class="text-left fade-in-on-scroll delay-2">
                         <div class="bg-white rounded-lg shadow-lg overflow-hidden mb-4">
-                            <img src="https://images.pexels.com/photos/1926620/pexels-photo-1926620.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2" alt="Extensões de cabelo premium" class="w-full h-64 object-cover" onerror="this.onerror=null;this.src='https://placehold.co/600x600/EAE8E4/595441?text=Imagem+Indisponível';">
+                            <img id="product1" src="https://images.pexels.com/photos/1926620/pexels-photo-1926620.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2" alt="Extensões de cabelo premium" class="w-full h-64 object-cover" onerror="this.onerror=null;this.src='https://placehold.co/600x600/EAE8E4/595441?text=Imagem+Indisponível';">
                         </div>
                         <h3 class="font-serif text-xl">Linha de Extensão Premium</h3>
                         <p class="text-gray-800 font-semibold">R$ 1.200,00</p>
@@ -234,7 +240,7 @@
                     <!-- Product 2 -->
                     <div class="text-left fade-in-on-scroll delay-3">
                         <div class="bg-white rounded-lg shadow-lg overflow-hidden mb-4">
-                            <img src="https://images.pexels.com/photos/2529158/pexels-photo-2529158.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2" alt="Sérum Reparador de Pontas" class="w-full h-64 object-cover" onerror="this.onerror=null;this.src='https://placehold.co/600x600/D6D2CC/595441?text=Imagem+Indisponível';">
+                            <img id="product2" src="https://images.pexels.com/photos/2529158/pexels-photo-2529158.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2" alt="Sérum Reparador de Pontas" class="w-full h-64 object-cover" onerror="this.onerror=null;this.src='https://placehold.co/600x600/D6D2CC/595441?text=Imagem+Indisponível';">
                         </div>
                         <h3 class="font-serif text-xl">Sérum Reparador</h3>
                         <p class="text-gray-800 font-semibold">R$ 150,00</p>
@@ -242,7 +248,7 @@
                     <!-- Product 3 -->
                     <div class="text-left fade-in-on-scroll delay-4">
                         <div class="bg-white rounded-lg shadow-lg overflow-hidden mb-4">
-                            <img src="https://images.pexels.com/photos/2529146/jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2" alt="Máscara de Hidratação Profunda" class="w-full h-64 object-cover" onerror="this.onerror=null;this.src='https://placehold.co/600x600/CCC5BB/595441?text=Imagem+Indisponível';">
+                            <img id="product3" src="https://images.pexels.com/photos/2529146/jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2" alt="Máscara de Hidratação Profunda" class="w-full h-64 object-cover" onerror="this.onerror=null;this.src='https://placehold.co/600x600/CCC5BB/595441?text=Imagem+Indisponível';">
                         </div>
                         <h3 class="font-serif text-xl">Máscara Hidratante</h3>
                         <p class="text-gray-800 font-semibold">R$ 180,00</p>
@@ -258,19 +264,19 @@
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12">
                     <!-- Artista 1 -->
                     <div class="fade-in-on-scroll delay-1">
-                        <img src="https://images.pexels.com/photos/3764014/pexels-photo-3764014.jpeg?auto=compress&cs=tinysrgb&w=800" alt="Foto do Artista 1" class="w-full h-auto object-cover rounded-lg shadow-lg mb-4" onerror="this.onerror=null;this.src='https://placehold.co/400x500/EAE8E4/3D3D3D?text=Imagem+Indisponível';">
+                        <img id="artist1" src="https://images.pexels.com/photos/3764014/pexels-photo-3764014.jpeg?auto=compress&cs=tinysrgb&w=800" alt="Foto do Artista 1" class="w-full h-auto object-cover rounded-lg shadow-lg mb-4" onerror="this.onerror=null;this.src='https://placehold.co/400x500/EAE8E4/3D3D3D?text=Imagem+Indisponível';">
                         <h3 class="text-xl font-serif">Ana Paula Batista</h3>
                         <p class="text-gray-600">Fundadora & Especialista em Mega Hair</p>
                     </div>
                     <!-- Artista 2 -->
                     <div class="fade-in-on-scroll delay-2">
-                        <img src="https://images.pexels.com/photos/3764011/pexels-photo-3764011.jpeg?auto=compress&cs=tinysrgb&w=800" alt="Foto do Artista 2" class="w-full h-auto object-cover rounded-lg shadow-lg mb-4" onerror="this.onerror=null;this.src='https://placehold.co/400x500/EAE8E4/3D3D3D?text=Imagem+Indisponível';">
+                        <img id="artist2" src="https://images.pexels.com/photos/3764011/pexels-photo-3764011.jpeg?auto=compress&cs=tinysrgb&w=800" alt="Foto do Artista 2" class="w-full h-auto object-cover rounded-lg shadow-lg mb-4" onerror="this.onerror=null;this.src='https://placehold.co/400x500/EAE8E4/3D3D3D?text=Imagem+Indisponível';">
                         <h3 class="font-serif text-xl">Juliana Silva</h3>
                         <p class="text-gray-600">Especialista em Coloração</p>
                     </div>
                     <!-- Artista 3 -->
                     <div class="fade-in-on-scroll delay-3">
-                        <img src="https://images.pexels.com/photos/3738347/pexels-photo-3738347.jpeg?auto=compress&cs=tinysrgb&w=800" alt="Foto do Artista 3" class="w-full h-auto object-cover rounded-lg shadow-lg mb-4" onerror="this.onerror=null;this.src='https://placehold.co/400x500/EAE8E4/3D3D3D?text=Imagem+Indisponível';">
+                        <img id="artist3" src="https://images.pexels.com/photos/3738347/pexels-photo-3738347.jpeg?auto=compress&cs=tinysrgb&w=800" alt="Foto do Artista 3" class="w-full h-auto object-cover rounded-lg shadow-lg mb-4" onerror="this.onerror=null;this.src='https://placehold.co/400x500/EAE8E4/3D3D3D?text=Imagem+Indisponível';">
                         <h3 class="font-serif text-xl">Carla Souza</h3>
                         <p class="text-gray-600">Terapeuta Capilar</p>
                     </div>
@@ -284,15 +290,15 @@
                 <h2 class="text-4xl md:text-5xl font-serif text-center mb-16 fade-in-on-scroll">Inspirações</h2>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-8 items-center">
                     <div class="space-y-8">
-                        <div class="rounded-lg overflow-hidden shadow-lg fade-in-on-scroll delay-1"><img src="http://googleusercontent.com/file_content/12" alt="Mulher no salão de beleza" class="w-full h-full object-cover" onerror="this.onerror=null;this.src='https://placehold.co/600x400/EAE8E4/3D3D3D?text=Imagem+Indisponível';"></div>
-                        <div class="rounded-lg overflow-hidden shadow-lg fade-in-on-scroll delay-2"><img src="http://googleusercontent.com/file_content/13" alt="Close-up de penteado" class="w-full h-full object-cover" onerror="this.onerror=null;this.src='https://placehold.co/600x400/D6D2CC/3D3D3D?text=Imagem+Indisponível';"></div>
+                        <div class="rounded-lg overflow-hidden shadow-lg fade-in-on-scroll delay-1"><img id="inspiration1" src="http://googleusercontent.com/file_content/12" alt="Mulher no salão de beleza" class="w-full h-full object-cover" onerror="this.onerror=null;this.src='https://placehold.co/600x400/EAE8E4/3D3D3D?text=Imagem+Indisponível';"></div>
+                        <div class="rounded-lg overflow-hidden shadow-lg fade-in-on-scroll delay-2"><img id="inspiration2" src="http://googleusercontent.com/file_content/13" alt="Close-up de penteado" class="w-full h-full object-cover" onerror="this.onerror=null;this.src='https://placehold.co/600x400/D6D2CC/3D3D3D?text=Imagem+Indisponível';"></div>
                     </div>
                     <div class="rounded-lg overflow-hidden shadow-lg fade-in-on-scroll delay-3">
-                        <img src="http://googleusercontent.com/file_content/10" alt="Ajustando o véu de uma noiva" class="w-full h-full object-cover" onerror="this.onerror=null;this.src='https://placehold.co/600x800/CCC5BB/3D3D3D?text=Imagem+Indisponível';">
+                        <img id="inspiration3" src="http://googleusercontent.com/file_content/10" alt="Ajustando o véu de uma noiva" class="w-full h-full object-cover" onerror="this.onerror=null;this.src='https://placehold.co/600x800/CCC5BB/3D3D3D?text=Imagem+Indisponível';">
                     </div>
                     <div class="space-y-8">
-                        <div class="rounded-lg overflow-hidden shadow-lg fade-in-on-scroll delay-4"><img src="http://googleusercontent.com/file_content/9" alt="Fazendo um penteado com trança" class="w-full h-full object-cover" onerror="this.onerror=null;this.src='https://placehold.co/600x400/EAE8E4/3D3D3D?text=Imagem+Indisponível';"></div>
-                        <div class="rounded-lg overflow-hidden shadow-lg fade-in-on-scroll delay-5"><img src="http://googleusercontent.com/file_content/15" alt="Cabelo loiro com ondas" class="w-full h-full object-cover" onerror="this.onerror=null;this.src='https://placehold.co/600x400/D6D2CC/3D3D3D?text=Imagem+Indisponível';"></div>
+                        <div class="rounded-lg overflow-hidden shadow-lg fade-in-on-scroll delay-4"><img id="inspiration4" src="http://googleusercontent.com/file_content/9" alt="Fazendo um penteado com trança" class="w-full h-full object-cover" onerror="this.onerror=null;this.src='https://placehold.co/600x400/EAE8E4/3D3D3D?text=Imagem+Indisponível';"></div>
+                        <div class="rounded-lg overflow-hidden shadow-lg fade-in-on-scroll delay-5"><img id="inspiration5" src="http://googleusercontent.com/file_content/15" alt="Cabelo loiro com ondas" class="w-full h-full object-cover" onerror="this.onerror=null;this.src='https://placehold.co/600x400/D6D2CC/3D3D3D?text=Imagem+Indisponível';"></div>
                     </div>
                 </div>
             </div>
@@ -388,14 +394,14 @@
             <div class="container mx-auto px-6 text-center">
                 <h2 class="text-4xl md:text-5xl font-serif mb-16 fade-in-on-scroll">Momentos no Studio</h2>
                 <div class="relative w-full overflow-hidden video-carousel-container">
-                    <div class="video-carousel-track">
+                    <div id="moments-carousel-track" class="video-carousel-track">
                         <!-- 6 vídeos originais -->
-                        <div class="video-carousel-item"><video class="w-full h-full object-cover" src="AQPO_kBn29FKr0roCY2eSjSG1ksfE9ISOXoXUyUpYD9RI4YHftX9_lwHTRDo4FMBAXYGhXK0xrP7oGVTH5MGe2Ekt79GvKbM.mp4" autoplay loop muted playsinline></video></div>
-                        <div class="video-carousel-item"><video class="w-full h-full object-cover" src="https://firebasestorage.googleapis.com/v0/b/platamais.firebasestorage.app/o/projeto%20vm%2FAQPziPSX8J10MEUUWa0G7jgaoukfjd7vN3SXdpOhbnF7zpQTJ9U0D_Od0GAhY_qh6LL08ACIGV4vm2cuGcZ3cZxcan9av5Vt.mp4?alt=media&token=3659d741-bd3e-408f-b289-353696a6cd6b" autoplay loop muted playsinline></video></div>
-                        <div class="video-carousel-item"><video class="w-full h-full object-cover" src="https://firebasestorage.googleapis.com/v0/b/platamais.firebasestorage.app/o/projeto%20vm%2FAQPvHzJEawE9F2ynODsYyGYLdV4b6Vu27IelcdETeOdOi1LVKlIBU5JJ5SdVGQOsC2pfRjx0F2P85n0qvwdsyQBPocRMyGZ4.mp4?alt=media&token=02862813-5ab7-45f8-8aab-d1974ea10d0e" autoplay loop muted playsinline></video></div>
-                        <div class="video-carousel-item"><video class="w-full h-full object-cover" src="https://firebasestorage.googleapis.com/v0/b/platamais.firebasestorage.app/o/projeto%20vm%2FAQOCP2ZQLqFg_xTVT0h8Rrdbq2XoFsfTu8_7emXV1NtNTbYfgxQE6bCFyOoh5G0-3zvWK6tL-D7QTtzO8qFUJ5nXfvtMXvaZ.mp4?alt=media&token=a6173373-4d5a-4ca5-97d2-d791cdd8c9c3" autoplay loop muted playsinline></video></div>
-                        <div class="video-carousel-item"><video class="w-full h-full object-cover" src="https://videos.pexels.com/video-files/7578278/7578278-sd_540_960_25fps.mp4" autoplay loop muted playsinline></video></div>
-                        <div class="video-carousel-item"><video class="w-full h-full object-cover" src="https://videos.pexels.com/video-files/4992471/4992471-sd_540_960_30fps.mp4" autoplay loop muted playsinline></video></div>
+                        <div class="video-carousel-item"><video id="momentsVideo1" class="w-full h-full object-cover" src="AQPO_kBn29FKr0roCY2eSjSG1ksfE9ISOXoXUyUpYD9RI4YHftX9_lwHTRDo4FMBAXYGhXK0xrP7oGVTH5MGe2Ekt79GvKbM.mp4" autoplay loop muted playsinline></video></div>
+                        <div class="video-carousel-item"><video id="momentsVideo2" class="w-full h-full object-cover" src="https://firebasestorage.googleapis.com/v0/b/platamais.firebasestorage.app/o/projeto%20vm%2FAQPziPSX8J10MEUUWa0G7jgaoukfjd7vN3SXdpOhbnF7zpQTJ9U0D_Od0GAhY_qh6LL08ACIGV4vm2cuGcZ3cZxcan9av5Vt.mp4?alt=media&token=3659d741-bd3e-408f-b289-353696a6cd6b" autoplay loop muted playsinline></video></div>
+                        <div class="video-carousel-item"><video id="momentsVideo3" class="w-full h-full object-cover" src="https://firebasestorage.googleapis.com/v0/b/platamais.firebasestorage.app/o/projeto%20vm%2FAQPvHzJEawE9F2ynODsYyGYLdV4b6Vu27IelcdETeOdOi1LVKlIBU5JJ5SdVGQOsC2pfRjx0F2P85n0qvwdsyQBPocRMyGZ4.mp4?alt=media&token=02862813-5ab7-45f8-8aab-d1974ea10d0e" autoplay loop muted playsinline></video></div>
+                        <div class="video-carousel-item"><video id="momentsVideo4" class="w-full h-full object-cover" src="https://firebasestorage.googleapis.com/v0/b/platamais.firebasestorage.app/o/projeto%20vm%2FAQOCP2ZQLqFg_xTVT0h8Rrdbq2XoFsfTu8_7emXV1NtNTbYfgxQE6bCFyOoh5G0-3zvWK6tL-D7QTtzO8qFUJ5nXfvtMXvaZ.mp4?alt=media&token=a6173373-4d5a-4ca5-97d2-d791cdd8c9c3" autoplay loop muted playsinline></video></div>
+                        <div class="video-carousel-item"><video id="momentsVideo5" class="w-full h-full object-cover" src="https://videos.pexels.com/video-files/7578278/7578278-sd_540_960_25fps.mp4" autoplay loop muted playsinline></video></div>
+                        <div class="video-carousel-item"><video id="momentsVideo6" class="w-full h-full object-cover" src="https://videos.pexels.com/video-files/4992471/4992471-sd_540_960_30fps.mp4" autoplay loop muted playsinline></video></div>
                         <!-- 6 vídeos clonados para o loop infinito -->
                         <div class="video-carousel-item"><video class="w-full h-full object-cover" src="AQPO_kBn29FKr0roCY2eSjSG1ksfE9ISOXoXUyUpYD9RI4YHftX9_lwHTRDo4FMBAXYGhXK0xrP7oGVTH5MGe2Ekt79GvKbM.mp4" autoplay loop muted playsinline></video></div>
                         <div class="video-carousel-item"><video class="w-full h-full object-cover" src="https://firebasestorage.googleapis.com/v0/b/platamais.firebasestorage.app/o/projeto%20vm%2FAQPziPSX8J10MEUUWa0G7jgaoukfjd7vN3SXdpOhbnF7zpQTJ9U0D_Od0GAhY_qh6LL08ACIGV4vm2cuGcZ3cZxcan9av5Vt.mp4?alt=media&token=3659d741-bd3e-408f-b289-353696a6cd6b" autoplay loop muted playsinline></video></div>
@@ -409,7 +415,7 @@
         </section>
 
         <!-- Full-width Image Banner 2 -->
-        <section class="relative h-[50vh] bg-cover bg-center flex items-center justify-center" style="background-image: url('https://images.pexels.com/photos/3065209/pexels-photo-3065209.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2');">
+        <section id="bannerFinal" class="relative h-[50vh] bg-cover bg-center flex items-center justify-center" style="background-image: url('https://images.pexels.com/photos/3065209/pexels-photo-3065209.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2');">
             <div class="absolute inset-0 bg-black/30"></div> <!-- Overlay -->
             <div class="relative text-center fade-in-on-scroll">
                 <h2 class="text-4xl md:text-5xl font-serif font-semibold text-white" style="text-shadow: 1px 1px 3px rgba(0,0,0,0.5);">A beleza está nos olhos de quem a vê</h2>
@@ -481,10 +487,7 @@
                 if (!entry.isIntersecting) {
                     return;
                 } else {
-                    // Adiciona um pequeno delay para garantir que a animação seja visível
-                    setTimeout(() => {
-                        entry.target.style.animationPlayState = 'running';
-                    }, 100);
+                    entry.target.style.animationPlayState = 'running';
                     observer.unobserve(entry.target);
                 }
             });
@@ -493,6 +496,100 @@
         faders.forEach(fader => {
             appearOnScroll.observe(fader);
         });
+    </script>
+    
+    <!-- Firebase SDK e Lógica de Carregamento de Conteúdo -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBy92mP9erKG-fpjDcAlynaARse5TlYBmw",
+            authDomain: "ana-paula-studio.firebaseapp.com",
+            projectId: "ana-paula-studio",
+            storageBucket: "ana-paula-studio.appspot.com",
+            messagingSenderId: "1083569634551",
+            appId: "1:1083569634551:web:8a433a76389753e6831d38"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const contentDocRef = doc(db, "siteContent", "homepage");
+
+        async function loadContent() {
+            try {
+                const docSnap = await getDoc(contentDocRef);
+                if (docSnap.exists()) {
+                    const data = docSnap.data();
+                    
+                    const mediaIds = [
+                        'heroVideo', 'aboutBanner', 'servicesImage', 
+                        'product1', 'product2', 'product3', 
+                        'artist1', 'artist2', 'artist3',
+                        'inspiration1', 'inspiration2', 'inspiration3', 'inspiration4', 'inspiration5',
+                        'momentsVideo1', 'momentsVideo2', 'momentsVideo3', 'momentsVideo4', 'momentsVideo5', 'momentsVideo6',
+                        'bannerFinal'
+                    ];
+
+                    mediaIds.forEach(id => {
+                        if (data[id]) {
+                            const element = document.getElementById(id);
+                            if (element) {
+                                // Para backgrounds, usamos style.backgroundImage
+                                if (id === 'aboutBanner' || id === 'bannerFinal') {
+                                    element.style.backgroundImage = `url('${data[id]}')`;
+                                } 
+                                // Para vídeos e imagens, usamos o atributo src
+                                else {
+                                    // Se for um vídeo dentro de um <source>, tratamos diferente
+                                    if (element.tagName === 'SOURCE') {
+                                        const videoElement = element.parentElement;
+                                        element.src = data[id];
+                                        videoElement.load(); // Recarrega o vídeo com a nova fonte
+                                    } else {
+                                         element.src = data[id];
+                                    }
+                                }
+                            }
+                        }
+                    });
+
+                    // Recria o carrossel de momentos com os vídeos clonados para o loop
+                    const momentsTrack = document.getElementById('moments-carousel-track');
+                    const videoKeys = ['momentsVideo1', 'momentsVideo2', 'momentsVideo3', 'momentsVideo4', 'momentsVideo5', 'momentsVideo6'];
+                    const existingVideos = videoKeys.map(key => data[key]).filter(Boolean);
+
+                    if (existingVideos.length > 0) {
+                        const allVideos = [...existingVideos, ...existingVideos]; // Duplica para o loop
+                        momentsTrack.innerHTML = ''; // Limpa o conteúdo atual
+
+                        allVideos.forEach((url, index) => {
+                             const videoItem = document.createElement('div');
+                             videoItem.className = 'video-carousel-item';
+                             videoItem.innerHTML = `<video class="w-full h-full object-cover" src="${url}" autoplay loop muted playsinline></video>`;
+                             momentsTrack.appendChild(videoItem);
+                        });
+
+                        // Adiciona a classe de animação
+                        momentsTrack.classList.add('scrolling-animation');
+                        // Ajusta a animação para o número correto de vídeos
+                        const newWidth = 320 * existingVideos.length;
+                        document.styleSheets[0].addRule(
+                           '@keyframes scroll',
+                           `from { transform: translateX(0); } to { transform: translateX(calc(-${newWidth}px)); }`
+                        );
+                    }
+
+
+                } else {
+                    console.log("Nenhum documento de conteúdo encontrado! Usando conteúdo padrão do HTML.");
+                }
+            } catch (error) {
+                console.error("Erro ao carregar conteúdo do Firebase: ", error);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', loadContent);
     </script>
 
 </body>
